@@ -11,6 +11,7 @@ struct Point
     y::Real
 end
 
+#TODO: there is a way to do this as a vector
 function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsize::Real)::Point
     #TODO: maybe use a better step size later
 
@@ -51,9 +52,9 @@ function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Re
 
     i = 1
 
+    # 1 has no meaning, it is just to make the loop run
     p = Point(1, 1, 1)
 
-    #TODO: change for a while loop (to integrate this while p ≠ 0)
     while p.x > 0
         #FIXME: this code is ugly
         if get_debug() println(i) end

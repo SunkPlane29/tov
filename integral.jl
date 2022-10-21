@@ -1,5 +1,5 @@
 # integrates the given function from a to b using the trapezoid method
-# THIS IS A GREAT SOURCE OF ERROR
+# this possibly introduces some considerable error
 # TODO: make a function with a more sophisticated method
 function integrate_trap(f::Function, a::Real, b::Real, n::Real=100000000)::Real
     Δx = (b-a)/n

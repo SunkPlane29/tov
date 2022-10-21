@@ -33,23 +33,37 @@ function plot_from_datafile()
     plot_functions(pcurve, mcurve)
 end
 
+function solve_write()::Tuple{Curve, Curve}
+    (pcurve, mcurve) = try solve_tov()
+        catch err
+            println(err)
+            return
+            end
+
+    write_data(pcurve, mcurve)
+
+    return (pcurve, mcurve)
+end
+
+function solve_normal()
+    (pcurve, mcurve) = solve_write()
+
+    plot_functions(pcurve, mcurve)
+end
+
+function solve_data()
+   solve_write()
+   return
+end
+
 function main()
     if get_only_graph()
         plot_from_datafile()
         return
     end
 
-    (pcurve, mcurve) = try solve_tov()
-        catch err
-            println(err)
-            return
-        end
-
-    write_data(pcurve::Curve, mcurve::Curve)
-
-    if get_only_data() return end
-
-    plot_functions(pcurve, mcurve)
+    if get_only_data() solve_data(); return end
+    solve_normal()
 end
 
 main()

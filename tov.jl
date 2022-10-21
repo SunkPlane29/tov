@@ -18,21 +18,14 @@ m₀ = 5.6                         # MeV
 #
 # -------------------------------------------------------
 
+#TODO: these global variables are weird, I could change this later
 eos = loadEOS()
 avg_slope = average_slope(eos)
 ϵ₀ = eos.df.energy_density[1]
 
-# convert from fm^-4 to MeV^4
-# never utilized this hehe
-function pfm_to_pmev(fm::Real)::Real
-    return fm * 1.5161165184e9
-end
-
 # pressure differential equation with some change for using
 function pressure_equation(r::Real, p::Real, M::Real)::Real
-    # TODO: make function to integrate M(r) and one functoin to get values of energy density
-    # corresponding to given pressure from the data file
-
+    #TODO: maybe these checks should depend on debug mode
     if r == 0
         throw("r = 0 means division by 0 in pressure equation")
     end
@@ -56,14 +49,15 @@ using QuadGK
 function mass_function(r::Real, p::Real, M::Real)::Real
     mm(r) = r^2*linearget_energydensity(avg_slope, ϵ₀, p)
 
+    #TODO: not using err
     (int, err) = quadgk(mm, 0, r)
     return β * int
 end
 
 function solve_tov()::Tuple{Curve,Curve}
-    p₀ = last(eos.df.pressure)
-    r₀ = 1e-3
-    stepsize = 0.001
+    p₀ = last(eos.df.pressure)  #fm^-4
+    r₀ = 1e-3                   #km
+    stepsize = 0.001            #km
     n = 100
 
     return solve_system(pressure_equation, mass_equation, r₀, p₀, m₀, stepsize, n)

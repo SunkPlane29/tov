@@ -1,3 +1,6 @@
+# some code I copied from stackoverflow that kinda converts a .dat fortran file
+# to a formated csv file
+
 function dat2csv(dat_path::AbstractString, csv_path::AbstractString)::AbstractString
     open(csv_path, write=true) do io
         for line in eachline(dat_path)

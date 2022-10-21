@@ -1,3 +1,4 @@
+# some utilities
 function get_arg(arg::String)::Bool
     for a in ARGS
         if a == arg return true end
