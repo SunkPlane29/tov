@@ -1,22 +1,20 @@
 include("eos.jl")
 include("diff.jl")
 
-SOLAR_MASS = 1.241105355e43      # MeV
+#SOLAR_MASS = 1.241105355e43      # MeV
+# this is the only thing that works now, but I think this is probably incorrect
+SOLAR_MASS = 1                   # dimensionless (test)
+#SOLAR_MASS = 1.98847e30          # kg (test)
 Λ = 587.9                        # MeV
 G = 2.44/(Λ^2)                   # in MeV^-2
 c = 1                            # dimensionless
-α = -(G * SOLAR_MASS)/c^2        # kg (i suppose)
-β = (4π)/(SOLAR_MASS * c^2)      # kg^-1 (i suppose)
+α = -(G * SOLAR_MASS)/(c^2)        # kg (i suppose)
+β = (4π)/(SOLAR_MASS * (c^2))      # kg^-1 (i suppose)
 m₀ = 5.6                         # MeV
 
 # -------------------------------------------------------
 #
 # PRIMEIRA TENTATIVA (acho que não é a primeira de verdade)
-#
-#   - agora que eu parei pra pensar, talvez eu tenha que pegar a equação da reta da EOS
-#   pra ter uma valor pra todo p. Se eu ficar no arquivo de dados, talvez não dê tão certo
-#   na hora de resolver as equações acopladas (não vai casar bem com os steps que são feitos
-#   no método de resolução)
 #
 # -------------------------------------------------------
 
@@ -47,8 +45,10 @@ function pressure_equation(r::Real, p::Real, M::Real)::Real
 end
 
 # is the actual coupled differential equation
+# FIXME: there is an essential problem in this equation and it is that β is
+# too small (like x10^-42) so i should find some better units (probably for solar mass)
 function mass_equation(r::Real, p::Real, M::Real)::Real
-    return β * r^2*linearget_energydensity(avg_slope, ϵ₀, p)
+    return β*(r^2)*linearget_energydensity(avg_slope, ϵ₀, p)
 end
 
 using QuadGK

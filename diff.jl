@@ -11,7 +11,6 @@ struct Point
     y::Real
 end
 
-#FIXME: i think there is something wrong here, this is not advancing mass function or g or y
 function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsize::Real)::Point
     #TODO: maybe use a better step size later
 
