@@ -12,12 +12,6 @@ c = 1                            # dimensionless
 β = (4π)/(SOLAR_MASS * (c^2))      # kg^-1 (i suppose)
 m₀ = 5.6                         # MeV
 
-# -------------------------------------------------------
-#
-# PRIMEIRA TENTATIVA (acho que não é a primeira de verdade)
-#
-# -------------------------------------------------------
-
 #TODO: these global variables are weird, I could change this later
 eos = loadEOS()
 avg_slope = average_slope(eos)
