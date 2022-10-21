@@ -11,6 +11,7 @@ struct Point
     y::Real
 end
 
+#FIXME: i think there is something wrong here, this is not advancing mass function or g or y
 function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsize::Real)::Point
     #TODO: maybe use a better step size later
 
@@ -39,6 +40,8 @@ function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsiz
     return Point(next_t, next_x, next_y)
 end
 
+#TODO: maybe make this accept a function (with some arguments, like x, y, n) that determines if the loop should stop
+#maybe make this function in another julia method (remember, a julia method is a function)
 function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, stepsize::Real, n::Integer)::Tuple{Curve,Curve}
     xcurve = Curve(Real[0], Real[x₀])
     ycurve = Curve(Real[0], Real[y₀])
@@ -47,8 +50,13 @@ function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Re
     previousx = x₀
     previousy = y₀
 
+    i = 1
+
+    p = Point(1, 1, 1)
+
     #TODO: change for a while loop (to integrate this while p ≠ 0)
-    for i = 1:n
+    while p.x > 0
+        #FIXME: this code is ugly
         if get_debug() println(i) end
 
         p = next_point(x, y, previoust, previousx, previousy, stepsize)
@@ -62,6 +70,7 @@ function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Re
         previoust = t
         previousx = p.x
         previousy = p.y
+        i += 1
     end
 
     return (xcurve, ycurve)

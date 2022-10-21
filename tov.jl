@@ -63,7 +63,7 @@ end
 function solve_tov()::Tuple{Curve,Curve}
     p₀ = last(eos.df.pressure)
     r₀ = 1e-3
-    stepsize = 0.08
+    stepsize = 0.001
     n = 100
 
     return solve_system(pressure_equation, mass_equation, r₀, p₀, m₀, stepsize, n)
