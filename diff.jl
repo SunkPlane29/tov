@@ -2,17 +2,12 @@ include("util.jl")
 
 struct Curve
     tvalues::AbstractVector{Real}
+    xvalues::AbstractVector{Real}
     yvalues::AbstractVector{Real}
 end
 
-struct Point
-    t::Real
-    x::Real
-    y::Real
-end
-
 #TODO: there is a way to do this as a vector
-function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsize::Real)::Point
+function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsize::Real)::Tuple{Real,Real,Real}
     #TODO: maybe use a better step size later
 
     #h = 1e-3
@@ -37,41 +32,43 @@ function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsiz
     next_x = x + kn
     next_y = y + ln
 
-    return Point(next_t, next_x, next_y)
+    return (next_t, next_x, next_y)
 end
 
 #TODO: maybe make this accept a function (with some arguments, like x, y, n) that determines if the loop should stop
 #maybe make this function in another julia method (remember, a julia method is a function)
-function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, stepsize::Real, n::Integer)::Tuple{Curve,Curve}
-    xcurve = Curve(Real[0], Real[x₀])
-    ycurve = Curve(Real[0], Real[y₀])
+function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, stepsize::Real, n::Integer)::Curve
+    curve = Curve(Real[t₀], Real[x₀], Real[y₀])
 
     previoust = t₀
     previousx = x₀
     previousy = y₀
+    nt, nx, ny = 1, 1, 1
 
     i = 1
+    eps = 1.0e-17
 
-    # 1 has no meaning, it is just to make the loop run
-    p = Point(1, 1, 1)
-    eps = 1.0e-16
+    while nx > 0
+    #while i <= n
+    #while abs(nx) > eps
+        #println(i)
+        #if abs(nx) < eps break end
+        if i > n break end
+        (nt, nx, ny) = next_point(x, y, previoust, previousx, previousy, stepsize)
 
-    #while p.x > 0
-    while i <= n
-    #while abs(p.x) > eps
-        p = next_point(x, y, previoust, previousx, previousy, stepsize)
-        t = p.t #any of these two works
+        append!(curve.tvalues, nt)
+        append!(curve.xvalues, nx)
+        append!(curve.yvalues, ny)
 
-        append!(xcurve.tvalues, t)
-        append!(xcurve.yvalues, p.x)
-        append!(ycurve.tvalues, t)
-        append!(ycurve.yvalues, p.y)
-
-        previoust = t
-        previousx = p.x
-        previousy = p.y
+        previoust = nt
+        previousx = nx
+        previousy = ny
         i += 1
     end
 
-    return (xcurve, ycurve)
+    return curve
+end
+
+function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, condition::Function)::Tuple{Curve,Curve}
+
 end

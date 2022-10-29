@@ -13,9 +13,11 @@ global const R₀ = G*MSOLAR/c^2
 β = 52.46 #km^-3
 
 function ϵ_rel(p::Real)::Real
+    if p < 0 return 0 end
     return p^(1/γ_rel)
 end
 
 function ϵ_nonrel(p::Real)::Real
+    if p < 0 return 0 end
     return p^(1/γ_nonrel)
 end

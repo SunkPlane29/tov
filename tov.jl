@@ -15,7 +15,7 @@ function pressure_equation(r::Real, p::Real, M::Real)::Real
     #     throw("M = 0 means a 0 angular coefficient for the tangent, that can possibly cause the solving to stay at 0 throughout")
     # end
 
-    @printf("radius:%.16e \npressure: %.16e \nmass: %.16e\n", r, p, M)
+    #@printf("radius:%.16e \npressure: %.16e \nmass: %.16e\n", r, p, M)
 
     #ATENTION: alpha should be defined in the code containing the eos
     return -α*ϵ_rel(p)*M/r^2
@@ -36,12 +36,13 @@ function mass_function(r::Real, p::Real, M::Real)::Real
     return int
 end
 
-function solve_tov()::Tuple{Curve,Curve}
-    p₀ = 1.0e-15
-    r₀ = 1e-4
+function solve_tov(p₀::Real)::Curve
+    r₀ = 1
     m₀ = 1e-16
     stepsize = 100
-    n = 5000
+    n = 10000
+
+    @printf("Solving TOV with p₀ = %.8e\n", p₀)
 
     return solve_system(pressure_equation, mass_equation, r₀, p₀, m₀, stepsize, n)
 end
