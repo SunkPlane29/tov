@@ -54,11 +54,11 @@ function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Re
 
     # 1 has no meaning, it is just to make the loop run
     p = Point(1, 1, 1)
+    eps = 1.0e-16
 
-    while p.x > 0
-        #FIXME: this code is ugly
-        if get_debug() println(i) end
-
+    #while p.x > 0
+    while i <= n
+    #while abs(p.x) > eps
         p = next_point(x, y, previoust, previousx, previousy, stepsize)
         t = p.t #any of these two works
 

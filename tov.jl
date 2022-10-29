@@ -1,58 +1,47 @@
-include("eos.jl")
 include("diff.jl")
+include("constants.jl")
+include("eos/polytropic.jl")
 
-#SOLAR_MASS = 1.241105355e43      # MeV
-# this is the only thing that works now, but I think this is probably incorrect
-SOLAR_MASS = 1                   # dimensionless (test)
-#SOLAR_MASS = 1.98847e30          # kg (test)
-Λ = 587.9                        # MeV
-G = 2.44/(Λ^2)                   # in MeV^-2
-c = 1                            # dimensionless
-α = -(G * SOLAR_MASS)/(c^2)        # kg (i suppose)
-β = (4π)/(SOLAR_MASS * (c^2))      # kg^-1 (i suppose)
-m₀ = 5.6                         # MeV
-
-#TODO: these global variables are weird, I could change this later
-eos = loadEOS()
-avg_slope = average_slope(eos)
-ϵ₀ = eos.df.energy_density[1]
+using Printf
 
 # pressure differential equation with some change for using
 function pressure_equation(r::Real, p::Real, M::Real)::Real
-    #TODO: maybe these checks should depend on debug mode
-    if r == 0
-        throw("r = 0 means division by 0 in pressure equation")
-    end
+    #TODO: maybe these checks should depend on debug mode or maybe they shouldn't even be here
+    # if r == 0
+    #     throw("r = 0 means division by 0 in pressure equation")
+    # end
 
-    if M == 0
-        throw("M = 0 means a 0 angular coefficient for the tangent, that can possibly cause the solving to stay at 0 throughout")
-    end
+    # if M == 0
+    #     throw("M = 0 means a 0 angular coefficient for the tangent, that can possibly cause the solving to stay at 0 throughout")
+    # end
 
-    return α*linearget_energydensity(avg_slope, ϵ₀, p)*mass_function(r, p, M)/r^2
+    @printf("radius:%.16e \npressure: %.16e \nmass: %.16e\n", r, p, M)
+
+    #ATENTION: alpha should be defined in the code containing the eos
+    return -α*ϵ_rel(p)*M/r^2
 end
 
-# is the actual coupled differential equation
-# FIXME: there is an essential problem in this equation and it is that β is
-# too small (like x10^-42) so i should find some better units (probably for solar mass)
+# is the actual mass coupled differential equation
 function mass_equation(r::Real, p::Real, M::Real)::Real
-    return β*(r^2)*linearget_energydensity(avg_slope, ϵ₀, p)
+    return β*(r^2)*ϵ_rel(p)
 end
 
 using QuadGK
 # returns a mass value corresponding to the mass in the interior of the radius r
 function mass_function(r::Real, p::Real, M::Real)::Real
-    mm(r) = r^2*linearget_energydensity(avg_slope, ϵ₀, p)
+    mm(r) = β*r^2*ϵ_rel(p)
 
     #TODO: not using err
     (int, err) = quadgk(mm, 0, r)
-    return β * int
+    return int
 end
 
 function solve_tov()::Tuple{Curve,Curve}
-    p₀ = last(eos.df.pressure)  #fm^-4
-    r₀ = 1e-3                   #km
-    stepsize = 0.001            #km
-    n = 100
+    p₀ = 1.0e-15
+    r₀ = 1e-4
+    m₀ = 1e-16
+    stepsize = 100
+    n = 5000
 
     return solve_system(pressure_equation, mass_equation, r₀, p₀, m₀, stepsize, n)
 end

@@ -55,15 +55,3 @@ function solve_data()
    solve_write()
    return
 end
-
-function main()
-    if get_only_graph()
-        plot_from_datafile()
-        return
-    end
-
-    if get_only_data() solve_data(); return end
-    solve_normal()
-end
-
-main()

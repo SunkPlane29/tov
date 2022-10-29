@@ -18,3 +18,7 @@ end
 function get_only_data()::Bool
     return get_arg("data")
 end
+
+macro run()
+    return :(include("main.jl"); solve_normal())
+end
