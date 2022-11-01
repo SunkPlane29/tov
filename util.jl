@@ -22,3 +22,7 @@ end
 macro run()
     return :(include("main.jl"); solve_normal())
 end
+
+macro runtov()
+    return :(include("main.jl"); solve_star_curve())
+end
