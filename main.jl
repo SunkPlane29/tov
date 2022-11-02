@@ -1,6 +1,5 @@
 include("diff.jl") #useless include
 include("tov.jl")
-include("util.jl")
 
 using Plots
 using DataFrames
@@ -8,8 +7,8 @@ using CSV
 
 function plot_functions(curve::Curve)
     p = plot(curve.tvalues, curve.xvalues, label = false)
-    xlabel!(p, "r in km")
-    ylabel!(p, "p (dimensionless)")
+    xlabel!(p, "r (km)")
+    ylabel!(p, "p (MeV^4)")
     savefig(p, "pressure_plot.png")
 
     m = plot(curve.tvalues, curve.yvalues, label = false)
@@ -32,8 +31,8 @@ function plot_from_datafile()
     plot_functions(curve)
 end
 
-function solve_write()::Curve
-    curve = try solve_tov(1.0e-15)
+function solve(p₀::Real)::Curve
+    curve = try solve_tov(p₀)
         catch err
             println(err)
             return
@@ -44,20 +43,18 @@ function solve_write()::Curve
     return curve
 end
 
-function solve_normal()
-    curve = solve_write()
+function solve_plot(p₀::Real)
+    curve = solve(p₀)
 
     plot_functions(curve)
 end
 
 function solve_data()
-   solve_write()
+   solve()
    return
 end
 
-function solve_star_curve()
-    pa = 1e-15
-    pb = 1e-13
+function solve_star_curve(pa::Real, pb::Real)
     n = 100
     h = (pb - pa)/n
 

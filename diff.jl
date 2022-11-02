@@ -1,5 +1,3 @@
-include("util.jl")
-
 struct Curve
     tvalues::AbstractVector{Real}
     xvalues::AbstractVector{Real}
@@ -67,8 +65,4 @@ function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Re
     end
 
     return curve
-end
-
-function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, condition::Function)::Tuple{Curve,Curve}
-
 end
