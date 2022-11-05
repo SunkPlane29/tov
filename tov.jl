@@ -20,11 +20,9 @@ function pressure_equation(r::Real, p::Real, M::Real)::Real
     # end
 
     @printf("r: %.8e, p: %.8e, ϵ_rel(): %.8e, M: %.8e\n", r, p, ϵ_rel(p), M)
-    println(-α*ϵ_rel(p)*mass_function(r, p, M)/r^2)
-    #TODO: this return value is possibly a very small number and that causes p to not shrink enougth)
-    #FIXME: ϵ_rel < p. WHYYYY???
-    #return (-α*ϵ_rel(p)*M/r^2)#*(1 + p/ϵ_rel(p))*(1 + (4π*r^3*p/mass_function(r, p, M)*c^2))*((1 - (2*G*mass_function(r, p, M)/c^2*r))^(-1))
-    return (-α*ϵ_rel(p)*mass_function(r, p, M)/r^2)#*(1 + p/ϵ_rel(p))*(1 + (4π*r^3*p/mass_function(r, p, M)*c^2))*((1 - (2*G*mass_function(r, p, M)/c^2*r))^(-1))
+
+    return -((ϵ_rel(p) + p)*(4π*G*r^3*p + G*mass_function(r, p, M)))/(r*(r - 2G*mass_function(r, p, M)))
+    #return (-α*ϵ_rel(p)*mass_function(r, p, M)/r^2)#*(1 + p/ϵ_rel(p))*(1 + (4π*r^3*p/mass_function(r, p, M)*c^2))*((1 - (2*G*mass_function(r, p, M)/c^2*r))^(-1))
 end
 
 # is the actual mass coupled differential equation
