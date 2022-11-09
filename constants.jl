@@ -5,15 +5,23 @@
 global const Z      = 6                 #number of protons/electrons in a carbom atom
 global const A      = 6                #number of neutrons in a carbon atom
 
+# ------------------------------------------------------------
+#
+# CONVERSION FACTORS
+#
+# ------------------------------------------------------------
+
+MEV_TO_KG_CONVERTIONFAC = 1.0e30/1.782661922
+
 module NaturalUnits
 export G, c, ħ, mₑ, mₙ, MSOLAR
 
-global const c      = 1                 #dimensionless
-global const ħ      = 1                 #dimensionless
-global const G      = 1.0e-51           #MeV⁻² (in natural units)
-global const mₑ     = 0.51099895000     #electron mass in MeV (in natural units)
-global const mₙ     = 939.56542052      #neutron mass in MeV (in natural units)
-global const MSOLAR = 1.115449865e60    #solar mass in MeV
+global const c      = 1                                     #dimensionless
+global const ħ      = 1                                     #dimensionless
+global const G      = 6.67259e-45*197.327                   #fm⋅MeV⁻¹ (in natural units)
+global const mₑ     = 0.51099895000                         #electron mass in MeV (in natural units)
+global const mₙ     = 939.56542052                          #neutron mass in MeV (in natural units)
+global const MSOLAR = 1.98847e30*MEV_TO_KG_CONVERTIONFAC    #solar mass in MeV
 end
 
 module SIUnits
@@ -61,16 +69,3 @@ global const mₑ     = 9.10938370e-28 * 7.4261e-29                       #cm
 global const mₙ     = 1.67492750e-24 * 7.4261e-29                       #cm
 global const MSOLAR = 1.98847e33 * 7.4261e-29                           #cm
 end
-
-# ------------------------------------------------------------
-#
-# CONVERSION FACTORS
-#
-# ------------------------------------------------------------
-
-global const KM_MEV_convertionfac   = 6.241509074e12   #MeV⁻¹
-global const MEV_KM_convertionfac   = 1.602176634e-13  #km
-global const FM_MEV_4_convertionfac = 1.515333907e30   #MeV⁴
-global const MEV_FM_4_convertionfac = 6.599205597e-31  #fm⁻⁴
-
-global const bruno_p0 = 6.55264111653593790e-3*FM_MEV_4_convertionfac

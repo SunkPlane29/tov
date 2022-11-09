@@ -47,11 +47,33 @@ function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Re
     eps = 1.0e-17
 
     while nx > 0
-    #while i <= n
-    #while abs(nx) > eps
-        #println(i)
-        #if abs(nx) < eps break end
         if i > n break end
+        (nt, nx, ny) = next_point(x, y, previoust, previousx, previousy, stepsize)
+
+        append!(curve.tvalues, nt)
+        append!(curve.xvalues, nx)
+        append!(curve.yvalues, ny)
+
+        previoust = nt
+        previousx = nx
+        previousy = ny
+        i += 1
+    end
+
+    return curve
+end
+
+function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, stepsize::Real, condition::Function)::Curve
+    curve = Curve(Real[t₀], Real[x₀], Real[y₀])
+
+    previoust = t₀
+    previousx = x₀
+    previousy = y₀
+    nt, nx, ny = 1, 1, 1
+
+    i = 1
+
+    while condition(i, previoust, previousx, previousy)
         (nt, nx, ny) = next_point(x, y, previoust, previousx, previousy, stepsize)
 
         append!(curve.tvalues, nt)
