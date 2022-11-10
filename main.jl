@@ -9,13 +9,13 @@ function plot_functions(curve::Curve)
     rticks = [5000, 10000, 15000, 20000, 25000, 30000]
 
     p = plot(curve.tvalues, curve.xvalues, label = false, xticks = rticks)
-    xlabel!(p, raw"$r (km)$")
-    ylabel!(p, raw"$p (J/m^3)$")
+    xlabel!(p, raw"$r$ (km)")
+    ylabel!(p, raw"$p$ (J/m$^3$)")
     savefig(p, "pressure_plot.png")
 
     m = plot(curve.tvalues, curve.yvalues, label = false, xticks = rticks)
-    xlabel!(m, raw"$r (km)$")
-    ylabel!(m, raw"$mass (M⊙)$")
+    xlabel!(m, raw"$r$ (km)")
+    ylabel!(m, raw"$M$ (M$_\odot$)")
     savefig(m, "mass_plot.png")
 end
 
@@ -78,7 +78,7 @@ function solve_star_curve(pa::Real, pb::Real)
     
 
     p = plot(Rvalues, Mvalues, legend = false)
-    xlabel!(p, "Radius (km)")
-    ylabel!(p, "Mass (M⊙)")
+    xlabel!(p, raw"Radius (km)")
+    ylabel!(p, raw"Mass (M$_\odot$)")
     savefig("tov_plot.png")
 end
