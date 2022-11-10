@@ -1,4 +1,4 @@
-struct Curve
+mutable struct Curve
     tvalues::AbstractVector{Real}
     xvalues::AbstractVector{Real}
     yvalues::AbstractVector{Real}

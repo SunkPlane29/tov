@@ -3,7 +3,7 @@
 #everything elso to this standard (i think i need to get everything to the same units)
 
 global const Z      = 6                 #number of protons/electrons in a carbom atom
-global const A      = 6                #number of neutrons in a carbon atom
+global const A      = 12                #number of neutrons in a carbon atom
 
 # ------------------------------------------------------------
 #
@@ -11,11 +11,10 @@ global const A      = 6                #number of neutrons in a carbon atom
 #
 # ------------------------------------------------------------
 
-MEV_TO_KG_CONVERTIONFAC = 1.0e30/1.782661922
-
 module NaturalUnits
-export G, c, ħ, mₑ, mₙ, MSOLAR
+export G, c, ħ, mₑ, mₙ, MSOLAR, MEV_TO_KG_CONVERTIONFAC
 
+global const MEV_TO_KG_CONVERTIONFAC = 1.0e30/1.782661922
 global const c      = 1                                     #dimensionless
 global const ħ      = 1                                     #dimensionless
 global const G      = 6.67259e-45*197.327                   #fm⋅MeV⁻¹ (in natural units)

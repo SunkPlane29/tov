@@ -6,12 +6,14 @@ using DataFrames
 using CSV
 
 function plot_functions(curve::Curve)
-    p = plot(curve.tvalues, curve.xvalues, label = false)
+    rticks = [5000, 10000, 15000]
+
+    p = plot(curve.tvalues, curve.xvalues, label = false, xticks = rticks)
     xlabel!(p, "r (km)")
     ylabel!(p, "p (MeV^4)")
     savefig(p, "pressure_plot.png")
 
-    m = plot(curve.tvalues, curve.yvalues, label = false)
+    m = plot(curve.tvalues, curve.yvalues, label = false, xticks = rticks)
     xlabel!(m, "r in km")
     ylabel!(m, "mass in M⊙")
     savefig(m, "mass_plot.png")
@@ -43,6 +45,7 @@ function solve(p₀::Real)::Curve
     return curve
 end
 
+#SUGESTION: to get the same results as the paper use p₀ = 2.0e-16
 function solve_plot(p₀::Real)
     curve = solve(p₀)
 

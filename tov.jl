@@ -4,51 +4,33 @@ include("eos/polytropic.jl")
 
 using Printf
 
-α = G*MSOLAR/c^2
-β = 4π/c^2
-#β = 4π/MSOLAR*c^2
+function solve_tov(p_init::Real)::Curve
+    r_init = 1.0e-8
+    m_init = 0
+    r₀ = 10000 #10km
+    n = 10000
+    stepsize = (r₀ - r_init)/n
 
-# pressure differential equation with some change for using
-function pressure_equation(r::Real, p::Real, M::Real)::Real
-    #TODO: maybe these checks should depend on debug mode or maybe they shouldn't even be here
-    # if r == 0
-    #     throw("r = 0 means division by 0 in pressure equation")
-    # end
+    @printf("Solving TOV with p_init = %.8e\n", p_init)
 
-    # if M == 0
-    #     throw("M = 0 means a 0 angular coefficient for the tangent, that can possibly cause the solving to stay at 0 throughout")
-    # end
+    R₀ = G*MSOLAR/c^2
+    α = R₀/r₀
+    ϵ₀ = ((1/K_REL)*(R₀/(α*r₀))^γ_rel)^(1/(γ_rel-1))
+    β = (4π*r₀^3*ϵ₀)/(MSOLAR*c^2)
 
-    @printf("r: %.8e, p: %.8e, ϵ_rel(): %.8e, M: %.8e\n", r, p, ϵ_rel(p), M)
+    @printf("Constants α = %.8e, β = %.8e, ϵ₀ = %.8e\n", α, β, ϵ₀)
 
-    return -((ϵ_rel(p) + p)*(4π*G*r^3*p + G*mass_function(r, p, M)))/(r*(r - 2G*mass_function(r, p, M)))
-    #return (-α*ϵ_rel(p)*mass_function(r, p, M)/r^2)#*(1 + p/ϵ_rel(p))*(1 + (4π*r^3*p/mass_function(r, p, M)*c^2))*((1 - (2*G*mass_function(r, p, M)/c^2*r))^(-1))
-end
+    eos(p) = p < 0 ? 0 : p^(1/γ_rel)
 
-# is the actual mass coupled differential equation
-function mass_equation(r::Real, p::Real, M::Real)::Real
-    return β*(r^2)*ϵ_rel(p)
-end
+    #TODO: think later about refactoring this
+    #TODO: also, too much clustered code, but this equations need to get some constants from environtment
+    pressure_eq(r, p, M) = -α*((M*eos(p))/r^2)
+    mass_eq(r, p, M) = β*r^2*eos(p)
+    condition_func(i, r, p, M) = p <= 0 || i > 100000 ? false : true
 
-using QuadGK
-# returns a mass value corresponding to the mass in the interior of the radius r
-function mass_function(r::Real, p::Real, M::Real)::Real
-    mm(r) = β*r^2*ϵ_rel(p) ;
-
-    #TODO: not using err
-    (int, err) = quadgk(mm, 0, r)
-    return int
-end
-
-function solve_tov(p₀::Real)::Curve
-    r₀ = 1.0e-16
-    m₀ = 1.0e-16
-    rmax = 10000
-    n = 100
-    stepsize = (rmax - r₀)/n
-
-    @printf("Solving TOV with p₀ = %.8e\n", p₀)
-
-    curve = solve_system(pressure_equation, mass_equation, r₀, p₀, m₀, stepsize, n)
+    curve = solve_system(pressure_eq, mass_eq, r_init, p_init, m_init, stepsize, condition_func)
+    #TODO: check these convertions later
+    curve.tvalues = curve.tvalues*r₀*1e-3
+    curve.xvalues = curve.xvalues*ϵ₀
     return curve
 end
