@@ -6,16 +6,16 @@ using DataFrames
 using CSV
 
 function plot_functions(curve::Curve)
-    rticks = [5000, 10000, 15000]
+    rticks = [5000, 10000, 15000, 20000, 25000, 30000]
 
     p = plot(curve.tvalues, curve.xvalues, label = false, xticks = rticks)
-    xlabel!(p, "r (km)")
-    ylabel!(p, "p (MeV^4)")
+    xlabel!(p, raw"$r (km)$")
+    ylabel!(p, raw"$p (J/m^3)$")
     savefig(p, "pressure_plot.png")
 
     m = plot(curve.tvalues, curve.yvalues, label = false, xticks = rticks)
-    xlabel!(m, "r in km")
-    ylabel!(m, "mass in M⊙")
+    xlabel!(m, raw"$r (km)$")
+    ylabel!(m, raw"$mass (M⊙)$")
     savefig(m, "mass_plot.png")
 end
 
@@ -45,7 +45,6 @@ function solve(p₀::Real)::Curve
     return curve
 end
 
-#SUGESTION: to get the same results as the paper use p₀ = 2.0e-16
 function solve_plot(p₀::Real)
     curve = solve(p₀)
 
@@ -57,8 +56,10 @@ function solve_data()
    return
 end
 
+using Interpolations
+
 function solve_star_curve(pa::Real, pb::Real)
-    n = 100
+    n = 10000
     h = (pb - pa)/n
 
     Rvalues = []
@@ -74,6 +75,7 @@ function solve_star_curve(pa::Real, pb::Real)
         append!(Rvalues, last(curve.tvalues))
         append!(Mvalues, last(curve.yvalues))
     end
+    
 
     p = plot(Rvalues, Mvalues, legend = false)
     xlabel!(p, "Radius (km)")

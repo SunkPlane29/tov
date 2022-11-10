@@ -7,7 +7,8 @@ using Printf
 function solve_tov(p_init::Real)::Curve
     r_init = 1.0e-8
     m_init = 0
-    r₀ = 10000 #10km
+    #TODO: I think that if i ajust very VERY well this one I may not have to change it never again
+    r₀ = 0.9319e4 #with p_init = 1.54e-16 and r₀ = 0.319e4 we get very near the results in the paper (varying the exponent in p_init also get near the other results in the paper)
     n = 10000
     stepsize = (r₀ - r_init)/n
 
