@@ -5,7 +5,7 @@ include("eos/polytropic.jl")
 using Printf
 
 function solve_tov(p_init::Real)::Curve
-    r_init = 1.0e-8
+    r_init = 0
     m_init = 0
     #TODO: I think that if i ajust very VERY well this one I may not have to change it never again
     r₀ = 0.9319e4 #with p_init = 1.54e-16 and r₀ = 0.319e4 we get very near the results in the paper (varying the exponent in p_init also get near the other results in the paper)
@@ -25,8 +25,8 @@ function solve_tov(p_init::Real)::Curve
 
     #TODO: think later about refactoring this
     #TODO: also, too much clustered code, but this equations need to get some constants from environtment
-    pressure_eq(r, p, M) = -α*((M*eos(p))/r^2)
-    mass_eq(r, p, M) = β*r^2*eos(p)
+    pressure_eq(r, p, M) = r == 0 ? 0 : -α*((M*eos(p))/r^2)
+    mass_eq(r, p, M) = r == 0 ? 0 : β*r^2*eos(p)
     condition_func(i, r, p, M) = p <= 0 || i > 100000 ? false : true
 
     curve = solve_system(pressure_eq, mass_eq, r_init, p_init, m_init, stepsize, condition_func)
