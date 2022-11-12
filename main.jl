@@ -2,18 +2,19 @@ include("diff.jl") #useless include
 include("tov.jl")
 
 using Plots
+GR.inline("png")
 using DataFrames
 using CSV
 
 function plot_functions(curve::Curve)
     rticks = [5000, 10000, 15000, 20000, 25000, 30000]
 
-    p = plot(curve.tvalues, curve.xvalues, label = false, xticks = rticks)
+    p = plot(curve.tvalues, curve.xvalues, label = false, xticks = rticks, show = false)
     xlabel!(p, raw"$r$ (km)")
     ylabel!(p, raw"$p$ (J/m$^3$)")
     savefig(p, "pressure_plot.png")
 
-    m = plot(curve.tvalues, curve.yvalues, label = false, xticks = rticks)
+    m = plot(curve.tvalues, curve.yvalues, label = false, xticks = rticks, show = false)
     xlabel!(m, raw"$r$ (km)")
     ylabel!(m, raw"$M$ (M$_\odot$)")
     savefig(m, "mass_plot.png")
@@ -77,7 +78,7 @@ function solve_star_curve(pa::Real, pb::Real)
     end
     
 
-    p = plot(Rvalues, Mvalues, legend = false)
+    p = plot(Rvalues, Mvalues, legend = false, show = false)
     xlabel!(p, raw"Radius (km)")
     ylabel!(p, raw"Mass (M$_\odot$)")
     savefig("tov_plot.png")
