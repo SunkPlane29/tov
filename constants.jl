@@ -3,7 +3,7 @@
 #everything elso to this standard (i think i need to get everything to the same units)
 
 global const Z      = 6                 #number of protons/electrons in a carbom atom
-global const A      = 12                #number of neutrons in a carbon atom
+global const A      = 12                #number of mass in a carbon atom
 
 # ------------------------------------------------------------
 #

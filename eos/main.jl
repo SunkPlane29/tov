@@ -5,7 +5,7 @@ include("./polytropic.jl")
 using Plots
 function plot_pϵ()
     p = range(1.0e13, 1.0e-22, length = 100)
-    ϵ = broadcast(ϵ_rel, p)
+    ϵ = broadcast(rel_polytrope, p)
 
     pl = plot(ϵ, p)
     xlabel!(pl, raw"$\epsilon$", dpi = 600)
