@@ -1,5 +1,5 @@
-include("diff.jl") #useless include 
 include("tov.jl")
+include("eos/polytropic.jl")
 
 using Plots
 GR.inline("png")
@@ -34,8 +34,8 @@ function plot_from_datafile()
     plot_functions(curve)
 end
 
-function solve(p₀::Real)::Curve
-    curve = try solve_tov(p₀)
+function solve(p₀::Real, ϵ₀::Real, r₀::Real, eos::Function)::Curve
+    curve = try solve_tov(p₀, ϵ₀, r₀, eos)
         catch err
             println(err)
             return
@@ -46,19 +46,36 @@ function solve(p₀::Real)::Curve
     return curve
 end
 
-function solve_plot(p₀::Real)
-    curve = solve(p₀)
+#SUGESTION: use p₀ = 1.54e-15, ϵ₀ = 5.61970127e+38 and r₀ = 0.9319e4 for relativistic limit (with p₀>1.54e-16)
+#TODO: find parameters to fit non relativistic limit
+#TODO: make some code later to pick these parameters to fit observations (? i don't know if it is allowed ?)
+function solve_plot(p₀::Real, ϵ₀::Real, r₀::Real)
+    #this make simpler to change from relativistic to non-relativistic later
+    γ = γ_rel
+    polytrope(p) = rel_polytrope(p)
+
+    eos_const = 1/ϵ₀^((γ-1)/γ)
+    eos(p) = p <= 0 ? 0 : polytrope(p)*eos_const
+    curve = solve(p₀, ϵ₀, r₀, eos)
 
     plot_functions(curve)
 end
 
-function solve_data()
+function solve_data(p₀::Real, ϵ₀::Real, r₀::Real)
+    γ = γ_rel
+    polytrope(p) = rel_polytrope(p)
+
+    eos_const = 1/ϵ₀^((γ-1)/γ)
+    eos(p) = p <= 0 ? 0 : polytrope(p)*eos_const
+    curve = solve(p₀, ϵ₀, r₀, eos)
+
+    return curve
    solve()
-   return
 end
 
 using Interpolations
 
+#not working for now
 function solve_star_curve(pa::Real, pb::Real)
     n = 10000
     h = (pb - pa)/n
