@@ -46,7 +46,8 @@ function solve(p₀::Real, ϵ₀::Real, r₀::Real, eos::Function)::Curve
     return curve
 end
 
-#SUGESTION: use p₀ = 1.54e-16, ϵ₀ = 5.61970127e+38 and r₀ = 0.9319e4
+#SUGESTION: use p₀ = 1.54e-15, ϵ₀ = 5.61970127e+38 and r₀ = 0.9319e4 for relativistic limit (with p₀>1.54e-16)
+#TODO: find parameters to fit non relativistic limit
 #TODO: make some code later to pick these parameters to fit observations (? i don't know if it is allowed ?)
 function solve_plot(p₀::Real, ϵ₀::Real, r₀::Real)
     #this make simpler to change from relativistic to non-relativistic later
@@ -60,7 +61,15 @@ function solve_plot(p₀::Real, ϵ₀::Real, r₀::Real)
     plot_functions(curve)
 end
 
-function solve_data()
+function solve_data(p₀::Real, ϵ₀::Real, r₀::Real)
+    γ = γ_rel
+    polytrope(p) = rel_polytrope(p)
+
+    eos_const = 1/ϵ₀^((γ-1)/γ)
+    eos(p) = p <= 0 ? 0 : polytrope(p)*eos_const
+    curve = solve(p₀, ϵ₀, r₀, eos)
+
+    return curve
    solve()
 end
 

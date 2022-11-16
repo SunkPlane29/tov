@@ -28,7 +28,7 @@ function solve_tov(p₀::Real, ϵ₀::Real, r₀::Real, eos::Function)::Curve
 
     #convertion from dimensionless ̄r and ̄p and also expressing radius in km
     #TODO: the convertion to km is not flexible in terms of system of units
-    curve.tvalues = curve.tvalues*r₀*1e-3
+    curve.tvalues = curve.tvalues*r₀*LENGTH_TO_KM_CONVERTIONFACTOR
     curve.xvalues = curve.xvalues*ϵ₀
     return curve
 end
