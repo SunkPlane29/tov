@@ -12,13 +12,13 @@ function solve_tov(p₀::Real, ϵ₀::Real, r₀::Real, eos::Function)::Curve
     n = 10000
     stepsize = (r₀ - r_init)/n
 
-    @printf("Solving TOV with p_init = %.8e\n", p₀)
+    @printf("Solving TOV with p₀ = %.8e, ϵ₀ = %.8e, r₀ = %.8e\n", p₀, ϵ₀, r₀)
 
     R₀ = G*MSOLAR/c^2
     α = R₀/r₀
     β = (4π*r₀^3*ϵ₀)/(MSOLAR*c^2)
 
-    @printf("Constants α = %.8e, β = %.8e", α, β)
+    @printf("Constants α = %.8e, β = %.8e\n", α, β)
 
     pressure_eq(r, p, M) = r == 0 ? 0 : -α*((M*eos(p))/r^2)
     mass_eq(r, p, M) = r == 0 ? 0 : β*r^2*eos(p)
