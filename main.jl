@@ -1,3 +1,6 @@
+include("constants.jl")
+using .SIUnits
+
 include("tov.jl")
 include("eos/polytropic.jl")
 
@@ -34,7 +37,11 @@ function plot_from_datafile()
     plot_functions(curve)
 end
 
-function solve(p₀::Real, ϵ₀::Real, r₀::Real, eos::Function)::Curve
+function solve(p₀::Real, ϵ₀::Real, r₀::Real, γ::Real, K::Real)::Curve
+    polytrp(p) = polytrope(p, γ, K)
+    eos_const = ϵ₀_const(ϵ₀, γ)
+    eos(p) = p <= 0 ? 0 : polytrp(p)*eos_const
+
     curve = try solve_tov(p₀, ϵ₀, r₀, eos)
         catch err
             println(err)
@@ -46,37 +53,33 @@ function solve(p₀::Real, ϵ₀::Real, r₀::Real, eos::Function)::Curve
     return curve
 end
 
-#SUGESTION: use p₀ = 1.54e-15, ϵ₀ = 5.61970127e+38 and r₀ = 0.9319e4 for relativistic limit (with p₀>1.54e-16)
+#SUGESTION: use p₀ = 1e-16, ϵ₀ = 6e+38 and r₀ = 1e4 for relativistic limit (with p₀>1.54e-16)
 #TODO: find parameters to fit non relativistic limit
 #TODO: make some code later to pick these parameters to fit observations (? i don't know if it is allowed ?)
 function solve_plot(p₀::Real, ϵ₀::Real, r₀::Real)
     #this make simpler to change from relativistic to non-relativistic later
     γ = γ_rel
-    polytrope(p) = rel_polytrope(p)
+    K = K_REL
 
-    eos_const = 1/ϵ₀^((γ-1)/γ)
-    eos(p) = p <= 0 ? 0 : polytrope(p)*eos_const
-    curve = solve(p₀, ϵ₀, r₀, eos)
+    curve = solve(p₀, ϵ₀, r₀, γ, K)
 
     plot_functions(curve)
 end
 
 function solve_data(p₀::Real, ϵ₀::Real, r₀::Real)
     γ = γ_rel
-    polytrope(p) = rel_polytrope(p)
+    K = K_REL
 
-    eos_const = 1/ϵ₀^((γ-1)/γ)
-    eos(p) = p <= 0 ? 0 : polytrope(p)*eos_const
-    curve = solve(p₀, ϵ₀, r₀, eos)
+    curve = solve(p₀, ϵ₀, r₀, γ, K)
 
     return curve
-   solve()
 end
 
-using Interpolations
-
 #not working for now
-function solve_star_curve(pa::Real, pb::Real)
+function solve_star_curve(pa::Real, pb::Real, ϵ₀::Real, r₀::Real)
+    γ = γ_rel
+    K = K_REL
+
     n = 10000
     h = (pb - pa)/n
 
@@ -84,11 +87,7 @@ function solve_star_curve(pa::Real, pb::Real)
     Mvalues = []
 
     for i = 1:n
-        curve = try solve_tov(pa + (i-1)*h)
-            catch err
-                println(err)
-                return
-            end
+        curve = solve(pa + (i-1)*h, ϵ₀, r₀, γ, K)
 
         append!(Rvalues, last(curve.tvalues))
         append!(Mvalues, last(curve.yvalues))

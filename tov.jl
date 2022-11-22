@@ -15,8 +15,8 @@ function solve_tov(p₀::Real, ϵ₀::Real, r₀::Real, eos::Function)::Curve
     @printf("Solving TOV with p₀ = %.8e, ϵ₀ = %.8e, r₀ = %.8e\n", p₀, ϵ₀, r₀)
 
     R₀ = G*MSOLAR/c^2
-    α = R₀/r₀
-    β = (4π*r₀^3*ϵ₀)/(MSOLAR*c^2)
+    α = R₀/(r₀)
+    β = (4π/(MSOLAR*c^2))*(r₀^3*ϵ₀)
 
     @printf("Constants α = %.8e, β = %.8e\n", α, β)
 
