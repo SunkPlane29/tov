@@ -37,7 +37,8 @@ function plot_from_datafile()
     plot_functions(curve)
 end
 
-function solve(p₀::Real, ϵ₀::Real, r₀::Real, γ::Real, K::Real)::Curve
+#TODO: make solve function without saving data
+function solve(p₀::Real, ϵ₀::Real, r₀::Real, γ::Real, K::Real, write::Bool = true)::Curve
     polytrp(p) = polytrope(p, γ, K)
     eos_const = ϵ₀_const(ϵ₀, γ)
     eos(p) = p <= 0 ? 0 : polytrp(p)*eos_const
@@ -48,7 +49,9 @@ function solve(p₀::Real, ϵ₀::Real, r₀::Real, γ::Real, K::Real)::Curve
             return
         end
 
-    write_data(curve)
+    if write
+        write_data(curve)
+    end
 
     return curve
 end
@@ -58,8 +61,8 @@ end
 #TODO: make some code later to pick these parameters to fit observations (? i don't know if it is allowed ?)
 function solve_plot(p₀::Real, ϵ₀::Real, r₀::Real)
     #this make simpler to change from relativistic to non-relativistic later
-    γ = γ_rel
-    K = K_REL
+    γ = γ_nonrel
+    K = K_NONREL
 
     curve = solve(p₀, ϵ₀, r₀, γ, K)
 
