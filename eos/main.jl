@@ -1,11 +1,10 @@
+include("../constants.jl")
 include("./polytropic.jl")
 
-#TODO: make dimensionless  ̄p and  ̄ϵ and choose appropriate values of α and β
-
 using Plots
-function plot_pϵ()
-    p = range(1.0e13, 1.0e-22, length = 100)
-    ϵ = broadcast(rel_polytrope, p)
+function plot_pϵ(pmin::Real, pmax::Real)
+    p = range(pmin, pmax, length = 1000)
+    ϵ = broadcast(polytrope, p, γ_nonrel, K_NONREL)
 
     pl = plot(ϵ, p)
     xlabel!(pl, raw"$\epsilon$", dpi = 600)

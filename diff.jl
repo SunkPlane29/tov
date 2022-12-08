@@ -30,37 +30,13 @@ function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsiz
     return (next_t, next_x, next_y)
 end
 
-#TODO: these two methods have basically the same code, i could make another function that incorporates this code
-#and then make these method simpler
-function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, stepsize::Real, n::Integer)::Curve
-    curve = Curve(Real[t₀], Real[x₀], Real[y₀])
-
-    previoust = t₀
-    previousx = x₀
-    previousy = y₀
-    nt, nx, ny = 1, 1, 1
-
-    i = 1
-    eps = 1.0e-17
-
-    for i = 1:n
-        (nt, nx, ny) = next_point(x, y, previoust, previousx, previousy, stepsize)
-
-        append!(curve.tvalues, nt)
-        append!(curve.xvalues, nx)
-        append!(curve.yvalues, ny)
-
-        previoust = nt
-        previousx = nx
-        previousy = ny
-        i += 1
-    end
-
-    return curve
-end
-
-function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, stepsize::Real, condition::Function)::Curve
-    curve = Curve(Real[t₀], Real[x₀], Real[y₀])
+#FIXME: there is one big big big problem in this method, while it does match the curve pretty well, changes in the
+#stepsize are affecting the solution, this should not be the case as we want the stepsize to get smaller and the
+#curves more precise. Find the cause of this issue
+function solve_system!(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, curve::Curve, stepsize::Real, condition::Function)
+    append!(curve.tvalues, t₀)
+    append!(curve.xvalues, x₀)
+    append!(curve.yvalues, y₀)
 
     previoust = t₀
     previousx = x₀
@@ -81,6 +57,4 @@ function solve_system(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Re
         previousy = ny
         i += 1
     end
-
-    return curve
 end
