@@ -1,7 +1,7 @@
 mutable struct Curve
-    tvalues::AbstractVector{Real}
-    xvalues::AbstractVector{Real}
-    yvalues::AbstractVector{Real}
+    tvalues::Vector{Float64}
+    xvalues::Vector{Float64}
+    yvalues::Vector{Float64}
 end
 
 #TODO: there is a way to do this as a vector
@@ -25,9 +25,6 @@ function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsiz
     return (next_t, next_x, next_y)
 end
 
-#FIXME: there is one big big big problem in this method, while it does match the curve pretty well, changes in the
-#stepsize are affecting the solution, this should not be the case as we want the stepsize to get smaller and the
-#curves more precise. Find the cause of this issue
 function solve_system!(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, curve::Curve, stepsize::Real, condition::Function)
     append!(curve.tvalues, t₀)
     append!(curve.xvalues, x₀)

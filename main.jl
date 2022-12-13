@@ -23,7 +23,9 @@ function solve(p₀::Real, γ::Real, K::Real, write::Bool = true)::Curve
     return curve
 end
 
-#suggestion use p₀ = 1.603e33 erg/cm³
+#TODO: i don't know if there is something wrong with these units or the equation of state, but i get different
+#results from the paper
+#suggestion use p₀ = 1.603e33 erg/cm³ for nonrelativistic version
 function solve_plot(p₀::Real)
     #this make simpler to change from relativistic to non-relativistic later
     γ = γ_nonrel
