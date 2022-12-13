@@ -13,6 +13,8 @@ using Printf
 using Debugger
 
 function solve_tov(p₀::Real, eos::Function)::Curve
+    #TODO: i had to choose these initial values very carefully, also, they might affect the solution a bit
+    #too much
     r_init = 1e-8
     m_init = 1e-24
     p_init = p₀

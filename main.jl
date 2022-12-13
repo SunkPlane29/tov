@@ -1,5 +1,4 @@
-# include("constants.jl")
-# using .SIUnits
+include("constants.jl")
 
 include("tov.jl")
 include("eos/polytropic.jl")
@@ -9,7 +8,7 @@ include("util.jl")
 #TODO: make solve function without saving data
 function solve(p₀::Real, γ::Real, K::Real, write::Bool = true)::Curve
     # I think returning a one here would not change the equations (since its will not be added and only multiplied)
-    eos(p) = p <= 0 ? 1 : polytrope(p, γ, K)
+    eos(p) = polytrope(p, γ, K)
 
     curve = try solve_tov(p₀, eos)
         catch err
@@ -46,8 +45,8 @@ end
 
 #not working for now
 function solve_star_curve(pa::Real, pb::Real)
-    γ = γ_rel
-    K = K_REL
+    γ = γ_nonrel
+    K = K_NONREL
 
     n = 10000
     h = (pb - pa)/n
