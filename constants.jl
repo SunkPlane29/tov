@@ -12,3 +12,4 @@ global const SI_TO_PRESSURE_UNIT::Real   = PRESSURE_UNIT_TO_SI^(-1)
 
 global const ħ::Real  = 1.054e-34*SI_TO_MASS_UNIT*SI_TO_LENGTH_UNIT^2*SI_TO_TIME_UNIT^(-1)
 global const mₙ::Real = 1.674e-27*SI_TO_MASS_UNIT
+global const mₑ::Real = 9.10938370e−31*SI_TO_MASS_UNIT

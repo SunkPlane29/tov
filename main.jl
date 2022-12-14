@@ -1,7 +1,7 @@
 include("constants.jl")
 
 include("tov.jl")
-include("eos/polytropic.jl")
+include("eos/polytropic_whitedwarf.jl")
 
 include("util.jl")
 
@@ -25,11 +25,11 @@ end
 
 #TODO: i don't know if there is something wrong with these units or the equation of state, but i get different
 #results from the paper
-#suggestion use p₀ = 1.603e33 erg/cm³ for nonrelativistic version
+#suggestion use p₀ = 1.603e33 erg/cm³ for nonrelativistic version neutron_star
 function solve_plot(p₀::Real)
     #this make simpler to change from relativistic to non-relativistic later
-    γ = γ_nonrel
-    K = K_NONREL
+    γ = γ_rel
+    K = K_REL
 
     curve = solve(p₀, γ, K)
 

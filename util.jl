@@ -29,3 +29,7 @@ function plot_from_datafile()
     curve = Curve(df.radius, df.pressure, df.mass)
     plot_curves(curve)
 end
+
+macro run(pressure)
+    return :(include("main.jl") ; solve_plot($pressure))
+end
