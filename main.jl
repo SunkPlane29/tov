@@ -7,7 +7,6 @@ include("util.jl")
 
 #TODO: make solve function without saving data
 function solve(p₀::Real, γ::Real, K::Real, write::Bool = true)::Curve
-    # I think returning a one here would not change the equations (since its will not be added and only multiplied)
     eos(p) = polytrope(p, γ, K)
 
     curve = try solve_tov(p₀, eos)
@@ -24,12 +23,14 @@ function solve(p₀::Real, γ::Real, K::Real, write::Bool = true)::Curve
 end
 
 #TODO: i don't know if there is something wrong with these units or the equation of state, but i get different
-#results from the paper
-#suggestion use p₀ = 1.603e32 J/m³ for nonrelativistic version neutron_star
+#results from the paper (apparently only on the relativistic neutron star verion, might be a problem with the eos)
+#suggestion use p₀ = 7.463e22 Pa J/m³ for relativistic version white dwarf (and higher power)
+#suggestion use p₀ = 2.488e23 J/m³ for non-relativistic version white dwarf (and higher power)
+#FIXME: non-relativistic white dwarf giving totally different results for the pressure given
 function solve_plot(p₀::Real)
     #this make simpler to change from relativistic to non-relativistic later
-    γ = γ_rel
-    K = K_REL
+    γ = γ_nonrel
+    K = K_NONREL
 
     curve = solve(p₀, γ, K)
 

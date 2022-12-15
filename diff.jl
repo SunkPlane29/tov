@@ -16,7 +16,7 @@ function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsiz
     kn3 = f_mod(t + h/2, v .+ (h/2)*kn2)
     kn4 = f_mod(t + h, v .+ h*kn3)
 
-    next_v = v + ((h/6).*(kn1 + 2kn2 + 2kn3 + kn4))
+    next_v = v + ((h/6).*(kn1 .+ 2kn2 .+ 2kn3 .+ kn4))
 
     next_t = t + h
     next_x = next_v[1]

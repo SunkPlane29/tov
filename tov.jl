@@ -10,6 +10,8 @@ using Printf
 #1(unit of length)  = 1.477*10^3m (also one half of the swartzchild radius of the sun)
 #1(unit of time)    = 4.927*10^-6s
 
+using Debugger
+
 function solve_tov(p₀::Real, eos::Function)::Curve
     #TODO: i had to choose these initial values very carefully, also, they might affect the solution a bit
     #too much
@@ -18,8 +20,11 @@ function solve_tov(p₀::Real, eos::Function)::Curve
     r_init = 1e-8
     m_init = 1e-24
     p_init = p₀
-    n = 10000
-    stepsize = 100*SI_TO_LENGTH_UNIT#TODO: change later to argument, probably wont matter anymore
+
+    #FIXME: the choice on stepsize is not affecting the result anymore, but there should be a big stepsize and
+    #a big n in order for the method to reach 0 ou lesser, otherwise the edge wont be reached
+    n = 100000
+    stepsize = 200*SI_TO_LENGTH_UNIT#TODO: change later to argument, probably wont matter anymore
 
     @printf("Solving TOV with p₀ = %.8e\n", p₀)
 
