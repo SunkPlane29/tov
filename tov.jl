@@ -32,13 +32,8 @@ function solve_tov(p₀::Real, eos::Function)::Curve
         special_rel_factor1 = 1 + p/eos(p)
         special_rel_factor2 = 1 + (4π*r^3*p)/M
         general_rel_factor = (1 - 2M/r)^(-1)
-<<<<<<< HEAD
-        slope = -newtonian#*special_rel_factor1*special_rel_factor2*general_rel_factor
-
-=======
         slope = -newtonian#*special_rel_factor1*special_rel_factor2*general_rel_factor
         @bp
->>>>>>> ad8512ebf7353c1ab2aa9481fdbc85ec90c3012a
         r == 0 ? 0 : slope
     end
     mass_eq(r, p, M) = begin
