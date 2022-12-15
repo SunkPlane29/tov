@@ -27,10 +27,9 @@ end
 #suggestion use p₀ = 7.463e22 Pa J/m³ for relativistic version white dwarf (and higher power)
 #suggestion use p₀ = 2.488e23 J/m³ for non-relativistic version white dwarf (and higher power)
 #FIXME: non-relativistic white dwarf giving totally different results for the pressure given
-function solve_plot(p₀::Real)
-    #this make simpler to change from relativistic to non-relativistic later
-    γ = γ_nonrel
-    K = K_NONREL
+function solve_plot(p₀::Real, relativistic::Bool = true)
+    γ = relativistic ? γ_rel : γ_nonrel
+    K = relativistic ? K_REL : K_NONREL
 
     curve = solve(p₀, γ, K)
 
@@ -38,8 +37,8 @@ function solve_plot(p₀::Real)
 end
 
 function solve_data(p₀::Real)
-    γ = γ_rel
-    K = K_REL
+    γ = relativistic ? γ_rel : γ_nonrel
+    K = relativistic ? K_REL : K_NONREL
 
     curve = solve(p₀, γ, K)
 

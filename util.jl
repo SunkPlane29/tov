@@ -30,6 +30,6 @@ function plot_from_datafile()
     plot_curves(curve)
 end
 
-macro run(pressure)
-    return :(include("main.jl") ; solve_plot($pressure))
+macro run(pressure, relativistic = true)
+    return :(include("main.jl") ; solve_plot($pressure, $relativistic))
 end

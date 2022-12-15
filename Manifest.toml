@@ -2,7 +2,7 @@
 
 julia_version = "1.8.2"
 manifest_format = "2.0"
-project_hash = "dbec722dc95fe9e01ee711765233c4d6eaef2d88"
+project_hash = "9fc5a1c4c77ec831e737c1a1d5ab8c54057cef08"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -137,6 +137,12 @@ deps = ["CodeTracking", "Crayons", "Highlights", "InteractiveUtils", "JuliaInter
 git-tree-sha1 = "2e1376ac793d255c8a312a99b961ef64ae60ffee"
 uuid = "31a5f54b-26ea-5ae9-a837-f05ce5417438"
 version = "0.7.6"
+
+[[deps.Defer]]
+deps = ["Test"]
+git-tree-sha1 = "d996f37909c203b57b2577ab93e6913a15ebf271"
+uuid = "6f25fe36-ecbb-5dff-aeb8-f7b50c87fb5f"
+version = "0.1.1"
 
 [[deps.DelimitedFiles]]
 deps = ["Mmap"]

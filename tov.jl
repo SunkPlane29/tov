@@ -38,7 +38,6 @@ function solve_tov(p₀::Real, eos::Function)::Curve
         special_rel_factor2 = 1 + (4π*r^3*p)/M
         general_rel_factor = (1 - 2M/r)^(-1)
         slope = -newtonian#*special_rel_factor1*special_rel_factor2*general_rel_factor
-        @bp
         r == 0 ? 0 : slope
     end
     mass_eq(r, p, M) = begin
@@ -51,22 +50,17 @@ function solve_tov(p₀::Real, eos::Function)::Curve
     end
     condition_func(i, r, p, M) = p <= 0 || i > 100000 ? false : true
 
-    curve = Curve(Real[], Real[], Real[])
-
+    curve = Curve(Float64[], Float64[], Float64[])
     try
         solve_system!(pressure_eq, mass_eq, r_init, p_init, m_init, curve, stepsize, condition_func)
     catch e
         @printf("error while solving diff equations: %s\n", e)
-        #TODO: repeated code?
         curve.tvalues = curve.tvalues*LENGTH_UNIT_TO_SI*1e-3
         curve.xvalues = curve.xvalues*PRESSURE_UNIT_TO_SI*SI_TO_GEV_FM3
         curve.yvalues = curve.yvalues
         return curve
     end
 
-    curve.tvalues = curve.tvalues*LENGTH_UNIT_TO_SI*1e-3
-    curve.xvalues = curve.xvalues*PRESSURE_UNIT_TO_SI*SI_TO_GEV_FM3
-    curve.yvalues = curve.yvalues
-
+    @printf("expected error ;)\n")
     return curve
 end
