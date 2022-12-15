@@ -33,7 +33,7 @@ function solve_plot(p₀::Real)
 
     curve = solve(p₀, γ, K)
 
-    plot_curves(curve, raw"r(km)", raw"p(dimensionless)", raw"M (M$_{\cdot}$)", "pressure_plot.png", "mass_plot.png")
+    plot_curves(curve, raw"r(km)", raw"p(MeV/fm³)", raw"M (M$_{\cdot}$)", "pressure_plot.png", "mass_plot.png")
 end
 
 function solve_data(p₀::Real)
@@ -50,7 +50,7 @@ function solve_star_curve(pa::Real, pb::Real)
     γ = γ_nonrel
     K = K_NONREL
 
-    n = 10000
+    n = 1000
     h = (pb - pa)/n
 
     Rvalues = []

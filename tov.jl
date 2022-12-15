@@ -10,8 +10,6 @@ using Printf
 #1(unit of length)  = 1.477*10^3m (also one half of the swartzchild radius of the sun)
 #1(unit of time)    = 4.927*10^-6s
 
-using Debugger
-
 function solve_tov(p₀::Real, eos::Function)::Curve
     #TODO: i had to choose these initial values very carefully, also, they might affect the solution a bit
     #too much
@@ -19,7 +17,7 @@ function solve_tov(p₀::Real, eos::Function)::Curve
     m_init = 1e-24
     p_init = p₀
     n = 10000
-    stepsize = 150*SI_TO_LENGTH_UNIT#TODO: change later to argument
+    stepsize = 100*SI_TO_LENGTH_UNIT#TODO: change later to argument, probably wont matter anymore
 
     @printf("Solving TOV with p₀ = %.8e\n", p₀)
 
@@ -33,7 +31,7 @@ function solve_tov(p₀::Real, eos::Function)::Curve
         special_rel_factor2 = 1 + (4π*r^3*p)/M
         general_rel_factor = (1 - 2M/r)^(-1)
         slope = -newtonian*special_rel_factor1*special_rel_factor2*general_rel_factor
-        @bp
+
         r == 0 ? 0 : slope
     end
     mass_eq(r, p, M) = begin
@@ -54,13 +52,13 @@ function solve_tov(p₀::Real, eos::Function)::Curve
         @printf("error while solving diff equations: %s\n", e)
         #TODO: repeated code?
         curve.tvalues = curve.tvalues*LENGTH_UNIT_TO_SI*1e-3
-        curve.xvalues = curve.xvalues
+        curve.xvalues = curve.xvalues*PRESSURE_UNIT_TO_SI*SI_TO_GEV_FM3
         curve.yvalues = curve.yvalues
         return curve
     end
 
     curve.tvalues = curve.tvalues*LENGTH_UNIT_TO_SI*1e-3
-    curve.xvalues = curve.xvalues
+    curve.xvalues = curve.xvalues*PRESSURE_UNIT_TO_SI*SI_TO_GEV_FM3
     curve.yvalues = curve.yvalues
 
     return curve
