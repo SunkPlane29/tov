@@ -25,7 +25,7 @@ end
 
 #TODO: i don't know if there is something wrong with these units or the equation of state, but i get different
 #results from the paper
-#suggestion use p₀ = 1.603e33 erg/cm³ for nonrelativistic version neutron_star
+#suggestion use p₀ = 1.603e32 J/m³ for nonrelativistic version neutron_star
 function solve_plot(p₀::Real)
     #this make simpler to change from relativistic to non-relativistic later
     γ = γ_rel
