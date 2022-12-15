@@ -5,7 +5,6 @@ include("eos/polytropic_whitedwarf.jl")
 
 include("util.jl")
 
-#TODO: make solve function without saving data
 function solve(p₀::Real, γ::Real, K::Real, write::Bool = true)::Curve
     eos(p) = polytrope(p, γ, K)
 
