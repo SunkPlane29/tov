@@ -4,7 +4,6 @@ mutable struct Curve
     yvalues::Vector{Float64}
 end
 
-#TODO: there is a way to do this as a vector
 function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsize::Real)::Tuple{Real,Real,Real}
     h = stepsize
     v = [x,y]
