@@ -1,34 +1,66 @@
 include("diff.jl")
+include("constants.jl")
 
 using Printf
 
-#FIXME: or maybe not. But in julia there is a problem of using modules and defining them
-#so for this function to work the constants need to be included from constants.jl and also
-#the system of units need to be declared with "using .$System$Units"
-function solve_tov(p₀::Real, ϵ₀::Real, r₀::Real, eos::Function)::Curve
-    r_init = 0
-    m_init = 0
+#I will define some units in which c = G = M⊙ = 1, i will also define convertion factors for
+#the basics units in SI: m, kg, s
+#
+#1(unit of mass)    = 1.989*10^30kg
+#1(unit of length)  = 1.477*10^3m (also one half of the swartzchild radius of the sun)
+#1(unit of time)    = 4.927*10^-6s
+
+using Debugger
+
+function solve_tov(p₀::Real, eos::Function)::Curve
+    #TODO: i had to choose these initial values very carefully, also, they might affect the solution a bit
+    #too much
+    #NOTE: from what I quickly analised it does change the solution, but the change is not that significant,
+    #the change will be like an error
+    r_init = 1e-8
+    m_init = 1e-24
     p_init = p₀
-    n = 10000
-    stepsize = (r₀ - r_init)/n
 
-    @printf("Solving TOV with p₀ = %.8e, ϵ₀ = %.8e, r₀ = %.8e\n", p₀, ϵ₀, r₀)
+    #FIXME: the choice on stepsize is not affecting the result anymore, but there should be a big stepsize and
+    #a big n in order for the method to reach 0 ou lesser, otherwise the edge wont be reached
+    n = 100000
+    stepsize = 200*SI_TO_LENGTH_UNIT#TODO: change later to argument, probably wont matter anymore
 
-    R₀ = G*MSOLAR/c^2
-    α = R₀/(r₀)
-    β = (4π/(MSOLAR*c^2))*(r₀^3*ϵ₀)
+    @printf("Solving TOV with p₀ = %.8e\n", p₀)
 
-    @printf("Constants α = %.8e, β = %.8e\n", α, β)
+    pressure_eq(r, p, M) = begin
+        if p <= 0
+            throw(ErrorException("error: pressure is lesser or equal to zero"))
+        end
 
-    pressure_eq(r, p, M) = r == 0 ? 0 : -α*((M*eos(p))/r^2)
-    mass_eq(r, p, M) = r == 0 ? 0 : β*r^2*eos(p)
+        newtonian = eos(p)*M/r^2
+        special_rel_factor1 = 1 + p/eos(p)
+        special_rel_factor2 = 1 + (4π*r^3*p)/M
+        general_rel_factor = (1 - 2M/r)^(-1)
+        slope = -newtonian#*special_rel_factor1*special_rel_factor2*general_rel_factor
+        r == 0 ? 0 : slope
+    end
+    mass_eq(r, p, M) = begin
+        if p <= 0
+            throw(ErrorException("error: pressure is lesser or equal to zero"))
+        end
+
+        slope = 4π*r^2*eos(p)
+        r == 0 ? 0 : slope
+    end
     condition_func(i, r, p, M) = p <= 0 || i > 100000 ? false : true
 
-    curve = solve_system(pressure_eq, mass_eq, r_init, p_init, m_init, stepsize, condition_func)
+    curve = Curve(Float64[], Float64[], Float64[])
+    try
+        solve_system!(pressure_eq, mass_eq, r_init, p_init, m_init, curve, stepsize, condition_func)
+    catch e
+        @printf("error while solving diff equations: %s\n", e)
+        curve.tvalues = curve.tvalues*LENGTH_UNIT_TO_SI*1e-3
+        curve.xvalues = curve.xvalues*PRESSURE_UNIT_TO_SI*SI_TO_GEV_FM3
+        curve.yvalues = curve.yvalues
+        return curve
+    end
 
-    #convertion from dimensionless ̄r and ̄p and also expressing radius in km
-    #TODO: the convertion to km is not flexible in terms of system of units
-    curve.tvalues = curve.tvalues*r₀*LENGTH_TO_KM_CONVERTIONFACTOR
-    curve.xvalues = curve.xvalues*ϵ₀
+    @printf("expected error ;)\n")
     return curve
 end
