@@ -29,7 +29,3 @@ function plot_from_datafile()
     curve = Curve(df.radius, df.pressure, df.mass)
     plot_curves(curve)
 end
-
-macro run(pressure, relativistic = true)
-    return :(include("main.jl") ; solve_plot($pressure, $relativistic))
-end

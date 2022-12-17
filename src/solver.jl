@@ -12,7 +12,7 @@ using Printf
 
 using Debugger
 
-function solve_tov(p₀::Real, eos::Function)::Curve
+function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
     #TODO: i had to choose these initial values very carefully, also, they might affect the solution a bit
     #too much
     #NOTE: from what I quickly analised it does change the solution, but the change is not that significant,
@@ -20,11 +20,6 @@ function solve_tov(p₀::Real, eos::Function)::Curve
     r_init = 1e-8
     m_init = 1e-24
     p_init = p₀
-
-    #FIXME: the choice on stepsize is not affecting the result anymore, but there should be a big stepsize and
-    #a big n in order for the method to reach 0 ou lesser, otherwise the edge wont be reached
-    n = 100000
-    stepsize = 200*SI_TO_LENGTH_UNIT#TODO: change later to argument, probably wont matter anymore
 
     @printf("Solving TOV with p₀ = %.8e\n", p₀)
 
