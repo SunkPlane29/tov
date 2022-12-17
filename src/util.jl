@@ -1,3 +1,5 @@
+using DataFrames
+using CSV
 using Plots
 GR.inline("png")
 
@@ -28,8 +30,4 @@ function plot_from_datafile()
     df = CSV.File("tov_data.csv") |> DataFrame
     curve = Curve(df.radius, df.pressure, df.mass)
     plot_curves(curve)
-end
-
-macro run(pressure, relativistic = true)
-    return :(include("main.jl") ; solve_plot($pressure, $relativistic))
 end

@@ -1,3 +1,4 @@
+#TODO: there are some modules that provide values for physical constants
 global const c::Real = G = MSOLAR = 1
 
 global const MASS_UNIT_TO_SI::Real       = 1.989e30
