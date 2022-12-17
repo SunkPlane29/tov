@@ -1,12 +1,4 @@
-include("constants.jl")
-include("tov.jl")
-include("eos/polytropic_whitedwarf.jl")
-include("util.jl")
-
-#TODO: lastly, this function should be callable from a real main file, and also it should accept the EoS
 function solve(p₀::Real, eos::Function, write::Bool = true, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)::Curve
-    eos(p) = polytrope(p, γ, K)
-
     curve = try solve_tov(p₀, eos, stepsize, n)
         catch err
             println(err)

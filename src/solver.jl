@@ -1,6 +1,4 @@
-include("diff.jl")
-include("constants.jl")
-
+#TODO: maybe put somewhere else
 using Printf
 
 #I will define some units in which c = G = M⊙ = 1, i will also define convertion factors for
@@ -9,8 +7,6 @@ using Printf
 #1(unit of mass)    = 1.989*10^30kg
 #1(unit of length)  = 1.477*10^3m (also one half of the swartzchild radius of the sun)
 #1(unit of time)    = 4.927*10^-6s
-
-using Debugger
 
 function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
     #TODO: i had to choose these initial values very carefully, also, they might affect the solution a bit
