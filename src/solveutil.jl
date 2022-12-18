@@ -42,7 +42,6 @@ function solve_star_curve(pa::Real, pb::Real, eos::Function; stepsize::Real = 20
 
         append!(Rvalues, last(curve.tvalues))
         append!(Mvalues, last(curve.yvalues))
-        println(last(curve.tvalues))
     end
 
     p = plot(Rvalues, Mvalues, legend = false, show = false)
