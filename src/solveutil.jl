@@ -1,4 +1,4 @@
-function solve(p₀::Real, eos::Function, write::Bool = true, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)::Curve
+function solve(p₀::Real, eos::Function; write::Bool = true, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)::Curve
     curve = try solve_tov(p₀, eos, stepsize, n)
         catch err
             println(err)
