@@ -38,7 +38,7 @@ function solve_star_curve(pa::Real, pb::Real, eos::Function)
     Mvalues = []
 
     for i = 1:n
-        curve = solve(pa + (i-1)*h, eos, false)
+        curve = solve(pa + (i-1)*h, eos, write = false)
 
         append!(Rvalues, last(curve.tvalues))
         append!(Mvalues, last(curve.yvalues))
