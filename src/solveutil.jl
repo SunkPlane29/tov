@@ -17,20 +17,20 @@ end
 #suggestion use p₀ = 7.463e22 J/m³ for relativistic version white dwarf (and higher power)
 #suggestion use p₀ = 2.488e23 J/m³ for non-relativistic version white dwarf (and higher power)
 #FIXME: non-relativistic white dwarf giving totally different results for the pressure given
-function solve_plot(p₀::Real, eos::Function)
-    curve = solve(p₀, eos)
+function solve_plot(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
+    curve = solve(p₀, eos, stepsize = stepsize, n = n)
 
     plot_curves(curve, raw"r(km)", raw"p(MeV/fm³)", raw"M (M$_{\cdot}$)", "pressure_plot.png", "mass_plot.png")
 end
 
-function solve_data(p₀::Real, eos::Function)
-    curve = solve(p₀, eos)
+function solve_data(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
+    curve = solve(p₀, eos, stepsize = stepsize, n = n)
 
     return curve
 end
 
 #not working for now
-function solve_star_curve(pa::Real, pb::Real, eos::Function)
+function solve_star_curve(pa::Real, pb::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
     n = 1000
     h = (pb - pa)/n
 
@@ -38,12 +38,12 @@ function solve_star_curve(pa::Real, pb::Real, eos::Function)
     Mvalues = []
 
     for i = 1:n
-        curve = solve(pa + (i-1)*h, eos, write = false)
+        curve = solve(pa + (i-1)*h, eos, stepsize = stepsize, n = n, write = false)
 
         append!(Rvalues, last(curve.tvalues))
         append!(Mvalues, last(curve.yvalues))
+        println(last(curve.tvalues))
     end
-    
 
     p = plot(Rvalues, Mvalues, legend = false, show = false)
     xlabel!(p, raw"Radius (km)")
