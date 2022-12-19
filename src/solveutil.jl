@@ -20,7 +20,7 @@ end
 function solve_plot(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
     curve = solve(p₀, eos, stepsize = stepsize, n = n)
 
-    plot_curves(curve, raw"r(km)", raw"p(MeV/fm³)", raw"M (M$_{\cdot}$)", "pressure_plot.png", "mass_plot.png")
+    plot_curves(curve, raw"r(km)", raw"p(erg/cm³)", raw"M (M$_{\odot}$)", "single_star_plot.png")
 end
 
 function solve_data(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)

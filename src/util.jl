@@ -3,16 +3,11 @@ using CSV
 using Plots
 GR.inline("png")
 
-function plot_curves(curve::Curve, tlabel::String, xlabel::String, ylabel::String, xname::String, yname::String)
-    p = plot(curve.tvalues, curve.xvalues, label = false, show = false)
-    xlabel!(p, tlabel)
-    ylabel!(p, xlabel)
-    savefig(p, xname)
-
-    m = plot(curve.tvalues, curve.yvalues, label = false, show = false)
-    xlabel!(m, tlabel)
-    ylabel!(m, ylabel)
-    savefig(m, yname)
+function plot_curves(curve::Curve, tlabel::String, xlabel::String, ylabel::String, name::String)
+    p = plot(curve.tvalues, curve.xvalues, label = "pressure", lc = :red, legend = :bottomright, xaxis = tlabel, yaxis = xlabel, show = false)
+    plot!(twinx(), curve.tvalues, curve.yvalues, yaxis = ylabel, show = false, linestyle = :dash, label = false)
+    plot!([-1], [0], xlims = extrema(curve.tvalues), lc = :blue, label = "mass") #evil hack from a random forum
+    savefig(p, name)
 end
 
 using DataFrames

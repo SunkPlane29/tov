@@ -47,7 +47,7 @@ function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
     catch e
         @printf("error while solving diff equations: %s\n", e)
         curve.tvalues = curve.tvalues*LENGTH_UNIT_TO_SI*1e-3
-        curve.xvalues = curve.xvalues*PRESSURE_UNIT_TO_SI#*SI_TO_GEV_FM3
+        curve.xvalues = curve.xvalues*PRESSURE_UNIT_TO_SI*1e1#*SI_TO_GEV_FM3
         curve.yvalues = curve.yvalues
         return curve
     end
