@@ -21,7 +21,7 @@ global const SI_TO_TIME_UNIT::Real       = TIME_UNIT_TO_SI^(-1)     # dimensionl
 global const PRESSURE_UNIT_TO_SI::Real = MASS_UNIT_TO_SI*LENGTH_UNIT_TO_SI^(-1)*TIME_UNIT_TO_SI^(-2) #Pa
 global const SI_TO_PRESSURE_UNIT::Real = PRESSURE_UNIT_TO_SI^(-1)                                    #dimensionless
 
-#don't know how I defined this but here it is
+#don't know how I defined this but here it is, figure out and put the factors (calculation here)
 global const SI_TO_GEV_FM3::Real         = 6.241509074e−36    #GeV fm⁻³
 global const GEV_GM3_TO_SI::Real         = SI_TO_GEV_FM3^(-1) #J m⁻³
 
