@@ -27,9 +27,3 @@ function plot_from_datafile()
     curve = Curve(df.radius, df.pressure, df.mass)
     plot_curves(curve)
 end
-
-#NOTE: this will only work if there is a matching method polytrope defined
-function get_polytrope(γ::Real, K::Real)::Function
-    eos(p) = polytrope(p, γ, K)
-    return eos
-end

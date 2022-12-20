@@ -10,7 +10,7 @@ include("diff.jl")
 export Curve, next_point, solve_system!
 
 include("util.jl")
-export plot_curves, write_data, plot_from_datafile, get_polytrope
+export plot_curves, write_data, plot_from_datafile
 
 #dependent files
 include("solver.jl")
@@ -23,13 +23,13 @@ export solve, solve_plot, solve_data, solve_star_curve
 module WhiteDwarfPolytrope
     include("constants.jl")
     include("eos/polytropic_whitedwarf.jl")
-    export A, Z, γ_nonrel, K_NONREL, γ_rel, K_REL, polytrope, get_polytrope
+    export A, Z, γ_nonrel, K_NONREL, γ_rel, K_REL, polytrope
 end
 
 module NeutronStarPolytrope
     include("constants.jl")
     include("eos/polytropic_neutronstar.jl")
-    export A, Z, γ_nonrel, K_NONREL, γ_rel, K_REL, polytrope, get_polytrope
+    export A, Z, γ_nonrel, K_NONREL, γ_rel, K_REL, polytrope
 end
 
 end
