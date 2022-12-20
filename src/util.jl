@@ -13,6 +13,7 @@ end
 using DataFrames
 using CSV
 
+#there should be somewhere denoting the units
 function write_data(curve::Curve)
     df = DataFrame()
     df.radius = curve.tvalues
@@ -25,4 +26,10 @@ function plot_from_datafile()
     df = CSV.File("tov_data.csv") |> DataFrame
     curve = Curve(df.radius, df.pressure, df.mass)
     plot_curves(curve)
+end
+
+#NOTE: this will only work if there is a matching method polytrope defined
+function get_polytrope(γ::Real, K::Real)::Function
+    eos(p) = polytrope(p, γ, K)
+    return eos
 end
