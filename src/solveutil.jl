@@ -2,11 +2,7 @@
 #data to a .csv file (always named tov_data.csv NOTE: might change later) unless specified not to
 #user must give an initial pressure and an equation of state (function of pressure) for the star
 function solve(p₀::Real, eos::Function; write::Bool = true, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)::Curve
-    curve = try solve_tov(p₀, eos, stepsize, n)
-        catch err
-            println(err)
-            return
-        end
+    curve = solve_tov(p₀, eos, stepsize, n)
 
     if write
         write_data(curve)

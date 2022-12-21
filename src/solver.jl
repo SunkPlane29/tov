@@ -48,6 +48,7 @@ function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
     condition_func(i, r, p, M) = p <= 0 || i > 100000 ? false : true
 
     curve = Curve(Float64[], Float64[], Float64[])
+    #TODO: make error handling
     try
         solve_system!(pressure_eq, mass_eq, r_init, p_init, m_init, curve, stepsize, condition_func)
     catch e
@@ -57,6 +58,5 @@ function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
         return curve
     end
 
-    #TODO: there should be some warning for this exit
     return curve
 end
