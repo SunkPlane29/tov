@@ -26,6 +26,9 @@ function solve_data(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH
     return curve
 end
 
+using CSV
+using DataFrames
+
 #not working for now
 function solve_star_curve(pa::Real, pb::Real, eos::Function; nstars::Integer = 1000, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
     h = (pb - pa)/nstars
@@ -39,6 +42,11 @@ function solve_star_curve(pa::Real, pb::Real, eos::Function; nstars::Integer = 1
         append!(Rvalues, last(curve.tvalues))
         append!(Mvalues, last(curve.yvalues))
     end
+
+    df = DataFrame()
+    df.radius = Rvalues
+    df.mass = MValues
+    CSV.write("tov_data.csv", df)
 
     p = plot(Rvalues, Mvalues, legend = false, show = false)
     xlabel!(p, raw"Radius (km)")

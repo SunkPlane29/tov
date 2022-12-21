@@ -19,7 +19,7 @@ function write_data(curve::Curve)
     df.radius = curve.tvalues
     df.pressure = curve.xvalues
     df.mass = curve.yvalues
-    CSV.write("tov_data.csv", df)
+    CSV.write("single_star_data.csv", df)
 end
 
 function plot_from_datafile()
