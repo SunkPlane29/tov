@@ -1,6 +1,6 @@
 name = "TOV"
 uuid = "9fca5ceb-772d-483d-8cca-4a82db852e23"
-version = 0.1.0
+version = "0.1.0"
 authors = ["André da Silva <andrezito300@gmail.com>"]
 
 [deps]
