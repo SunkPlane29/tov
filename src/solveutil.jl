@@ -45,7 +45,7 @@ function solve_star_curve(pa::Real, pb::Real, eos::Function; nstars::Integer = 1
 
     df = DataFrame()
     df.radius = Rvalues
-    df.mass = MValues
+    df.mass = Mvalues
     CSV.write("tov_data.csv", df)
 
     p = plot(Rvalues, Mvalues, legend = false, show = false)
