@@ -31,14 +31,13 @@ function solve_data(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH
 end
 
 #not working for now
-function solve_star_curve(pa::Real, pb::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
-    n = 1000
-    h = (pb - pa)/n
+function solve_star_curve(pa::Real, pb::Real, eos::Function; nstars::Integer = 1000, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
+    h = (pb - pa)/nstars
 
     Rvalues = []
     Mvalues = []
 
-    for i = 1:n
+    for i = 1:nstars
         curve = solve(pa + (i-1)*h, eos, stepsize = stepsize, n = n, write = false)
 
         append!(Rvalues, last(curve.tvalues))
