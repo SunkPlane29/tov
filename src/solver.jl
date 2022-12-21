@@ -1,6 +1,3 @@
-#TODO: maybe put somewhere else
-using Printf
-
 #I will define some units in which c = G = M⊙ = 1, i will also define convertion factors for
 #the basics units in SI: m, kg, s
 #
@@ -23,9 +20,6 @@ function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
     r_init = 1e-8
     m_init = 1e-24
     p_init = p₀
-
-    #TODO: print statements should not be on modules and non main files
-    @printf("Solving TOV with p₀ = %.8e\n", p₀)
 
     #equation of hydrostatic equilibrium with exception thrown when the pressure is negative
     pressure_eq(r, p, M) = begin
@@ -57,13 +51,12 @@ function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
     try
         solve_system!(pressure_eq, mass_eq, r_init, p_init, m_init, curve, stepsize, condition_func)
     catch e
-        @printf("error while solving diff equations: %s\n", e)
         curve.tvalues = curve.tvalues*LENGTH_UNIT_TO_SI*1e-3
         curve.xvalues = curve.xvalues*PRESSURE_UNIT_TO_SI*1e1#*SI_TO_GEV_FM3
         curve.yvalues = curve.yvalues
         return curve
     end
 
-    @printf("expected error ;)\n")
+    #TODO: there should be some warning for this exit
     return curve
 end
