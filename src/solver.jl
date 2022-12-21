@@ -38,7 +38,7 @@ function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
         special_rel_factor1 = 1 + p/eos(p)
         special_rel_factor2 = 1 + (4π*r^3*p)/M
         general_rel_factor = (1 - 2M/r)^(-1)
-        slope = -newtonian#*special_rel_factor1*special_rel_factor2*general_rel_factor
+        slope = -newtonian*special_rel_factor1*special_rel_factor2*general_rel_factor
         r == 0 ? 0 : slope
     end
     #equation of mass continuity
