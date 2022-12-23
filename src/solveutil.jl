@@ -30,6 +30,9 @@ using CSV
 using DataFrames
 
 #not working for now
+#NOTE: this function uses all threads avaliable in julia program (a library shouldn't do multithreaded code, but
+#I think this solution is suitable here, since it reduces in 50%+ the execution time)
+#TODO: there might be a solution using GPU, but this solution can be in another function
 function solve_star_curve(pa::Real, pb::Real, eos::Function; nstars::Integer = 1000, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
     h = (pb - pa)/nstars
 
