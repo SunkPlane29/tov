@@ -39,7 +39,7 @@ function solve_star_curve(pa::Real, pb::Real, eos::Function; nstars::Integer = 1
 
     #multithreaded for loop
     l = ReentrantLock()
-    Threads.@threds :dynamic for i = 1:nstars
+    Threads.@threads :dynamic for i = 1:nstars
         p₀ = pa + (i-1)*h
         curve = solve(p₀, eos, stepsize = stepsize, n = n, write = false)
 
