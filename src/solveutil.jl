@@ -33,15 +33,32 @@ using DataFrames
 function solve_star_curve(pa::Real, pb::Real, eos::Function; nstars::Integer = 1000, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
     h = (pb - pa)/nstars
 
+    pvalues = []
     Rvalues = []
     Mvalues = []
 
-    for i = 1:nstars
-        curve = solve(pa + (i-1)*h, eos, stepsize = stepsize, n = n, write = false)
+    #multithreaded for loop
+    l = ReentrantLock()
+    Threads.@threds :dynamic for i = 1:nstars
+        p₀ = pa + (i-1)*h
+        curve = solve(p₀, eos, stepsize = stepsize, n = n, write = false)
 
-        append!(Rvalues, last(curve.tvalues))
-        append!(Mvalues, last(curve.yvalues))
+        lock(l)
+        try
+            append!(pvalues, p₀)
+            append!(Rvalues, last(curve.tvalues))
+            append!(Mvalues, last(curve.yvalues))
+        finally
+            unlock(l)
+        end
     end
+
+    #since the tov was solve in a multithreaded way, the resulting M and R values are unordered, to solve this
+    #one can simply apply a sort in p₀ values and then apply the same sorting on M and R values
+    perm = sortperm(pvalues, alg = QuickSort)
+    pvalues = pvalues[perm]
+    Rvalues = Rvalues[perm]
+    Mvalues = Mvalues[perm]
 
     df = DataFrame()
     df.radius = Rvalues
