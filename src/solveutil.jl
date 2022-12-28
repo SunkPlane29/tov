@@ -36,6 +36,7 @@ using DataFrames
 #solve_mrdiagram solves TOV equations for a range of initial pressures. the resulting plot is a Mass Radius diagram for
 #the chosen star type. Note that this function uses multithreaded code when available, i.e., when the julia repl or inter
 #preter is called with --threads (nthreads) argument
+#TODO: test https://juliagpu.github.io/KernelAbstractions.jl/stable/
 function solve_mrdiagram(pa::Real, pb::Real, eos::Function; nstars::Integer = 1000, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)::Curve
     h = (pb - pa)/nstars
 

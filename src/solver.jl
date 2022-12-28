@@ -53,7 +53,7 @@ function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
         solve_system!(pressure_eq, mass_eq, r_init, p_init, m_init, curve, stepsize, condition_func)
     catch e
         curve.tvalues = curve.tvalues*LENGTH_UNIT_TO_SI*1e-3
-        curve.xvalues = curve.xvalues*PRESSURE_UNIT_TO_SI*1e1#*SI_TO_GEV_FM3
+        curve.xvalues = curve.xvalues*PRESSURE_UNIT_TO_SI*JOULE_TO_MEV4*MEV4_TO_MEVFM3
         curve.yvalues = curve.yvalues
         return curve
     end
