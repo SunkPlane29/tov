@@ -18,7 +18,7 @@ include("solver.jl")
 export solve_tov
 
 include("solveutil.jl")
-export solve, solve_plot, solve_data, solve_star_curve
+export solve, solve_plot, solve_data, solve_mrdiagram
 
 #Polytrope EoS modules
 module WhiteDwarfPolytrope
