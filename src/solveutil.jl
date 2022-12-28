@@ -33,7 +33,10 @@ using DataFrames
 #NOTE: this function uses all threads avaliable in julia program (a library shouldn't do multithreaded code, but
 #I think this solution is suitable here, since it reduces in 50%+ the execution time)
 #TODO: there might be a solution using GPU, but this solution can be in another function
-function solve_star_curve(pa::Real, pb::Real, eos::Function; nstars::Integer = 1000, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
+#solve_mrdiagram solves TOV equations for a range of initial pressures. the resulting plot is a Mass Radius diagram for
+#the chosen star type. Note that this function uses multithreaded code when available, i.e., when the julia repl or inter
+#preter is called with --threads (nthreads) argument
+function solve_mrdiagram(pa::Real, pb::Real, eos::Function; nstars::Integer = 1000, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)::Curve
     h = (pb - pa)/nstars
 
     pvalues = []
@@ -56,7 +59,7 @@ function solve_star_curve(pa::Real, pb::Real, eos::Function; nstars::Integer = 1
         end
     end
 
-    #since the tov was solve in a multithreaded way, the resulting M and R values are unordered, to solve this
+    #since the tov was solved in a multithreaded way, the resulting M and R values are unordered, to solve this
     #one can simply apply a sort in p₀ values and then apply the same sorting on M and R values
     perm = sortperm(pvalues, alg = QuickSort)
     pvalues = pvalues[perm]
@@ -66,10 +69,12 @@ function solve_star_curve(pa::Real, pb::Real, eos::Function; nstars::Integer = 1
     df = DataFrame()
     df.radius = Rvalues
     df.mass = Mvalues
-    CSV.write("tov_data.csv", df)
+    CSV.write("mrdiagram.csv", df)
 
     p = plot(Rvalues, Mvalues, legend = false, show = false)
     xlabel!(p, raw"Radius (km)")
     ylabel!(p, raw"Mass (M$_\odot$)")
-    savefig("tov_plot.png")
+    savefig("mrdiagram.png")
+
+    return Curve(pvalues, Rvalues, Mvalues)
 end

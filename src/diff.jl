@@ -1,9 +1,13 @@
+#Curve holds the solution data of two couppled differential equations, x and y,  that depend on a single
+#variable t
 mutable struct Curve
     tvalues::Vector{Float64}
     xvalues::Vector{Float64}
     yvalues::Vector{Float64}
 end
 
+#next_point calculates the next_point in the solution of the couppled differential equation x and y using Range-Kutta 4
+#method
 function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsize::Real)::Tuple{Real,Real,Real}
     h = stepsize
     v = [x,y]
@@ -24,6 +28,10 @@ function next_point(f::Function, g::Function, t::Real, x::Real, y::Real, stepsiz
     return (next_t, next_x, next_y)
 end
 
+#solve_system! solves the system of two couppled differential equations x and y, that depend on a variable t. The solution
+#of this system is stored in a Curve structure that should be passed as an argument. A condition function should also be
+#passed as argument, this function will accept i (the index of the solution), previoust (previous value of t variable),
+#previousx (previous value of the x variable) and prevousy (previous value of y variable)
 function solve_system!(x::Function, y::Function, t₀::Real, x₀::Real, y₀::Real, curve::Curve, stepsize::Real, condition::Function)
     append!(curve.tvalues, t₀)
     append!(curve.xvalues, x₀)
