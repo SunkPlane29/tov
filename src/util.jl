@@ -57,7 +57,7 @@ function get_eos_from_csv(file::String)::Function
     eos_data = CSV.File(file, header = ["epsilon", "p"]) |> DataFrame
 
     pressure = eos_data.p .* TOV.MEVFM3_TO_MEV4 .* TOV.MEV4_TO_JOULE .* TOV.SI_TO_PRESSURE_UNIT
-    energy_density = eos_data.epsilon .* TOV.MEVFM4_TO_MEV4 .* TOV.MEV4_TO_JOULE .* TOV.SI_TO_PRESSURE_UNIT
+    energy_density = eos_data.epsilon .* TOV.MEVFM3_TO_MEV4 .* TOV.MEV4_TO_JOULE .* TOV.SI_TO_PRESSURE_UNIT
 
 
     eos_interp = linear_interpolation(pressure, energy_density)
