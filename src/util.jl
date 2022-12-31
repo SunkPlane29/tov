@@ -36,7 +36,7 @@ end
 
 #functions to convert .dat files (commonly from fortran programs) into .csv files, which
 #are more machine readable
-function dat2csv(dat_path::AbstractString, csv_path::AbstractString)::AbstractString
+function _dat2csv(dat_path::AbstractString, csv_path::AbstractString)::AbstractString
     open(csv_path, write=true) do io
         for line in eachline(dat_path)
             join(io, split(line), ',')
@@ -48,7 +48,7 @@ end
 
 function dat2csv(dat_path::AbstractString)::AbstractString
     base, ext = splitext(dat_path)
-    return dat2csv(dat_path, "$base.csv")
+    return _dat2csv(dat_path, "$base.csv")
 end
 
 #util function that gets eos from a datafile and then makes a linear interpolation of the eos
