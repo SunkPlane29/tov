@@ -51,6 +51,8 @@ function dat2csv(dat_path::AbstractString)::AbstractString
     return _dat2csv(dat_path, "$base.csv")
 end
 
+using Interpolations
+
 #util function that gets eos from a datafile and then makes a linear interpolation of the eos
 #and return the interpolation function
 function get_eos_from_csv(file::String)::Function
