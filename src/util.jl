@@ -33,3 +33,35 @@ function plot_from_datafile()
     curve = Curve(df.radius, df.pressure, df.mass)
     plot_curves(curve)
 end
+
+#functions to convert .dat files (commonly from fortran programs) into .csv files, which
+#are more machine readable
+function dat2csv(dat_path::AbstractString, csv_path::AbstractString)::AbstractString
+    open(csv_path, write=true) do io
+        for line in eachline(dat_path)
+            join(io, split(line), ',')
+            println(io)
+        end
+    end
+    return csv_path
+end
+
+function dat2csv(dat_path::AbstractString)::AbstractString
+    base, ext = splitext(dat_path)
+    return dat2csv(dat_path, "$base.csv")
+end
+
+#util function that gets eos from a datafile and then makes a linear interpolation of the eos
+#and return the interpolation function
+function get_eos_from_csv(file::String)::Function
+    eos_data = CSV.File(file, header = ["epsilon", "p"]) |> DataFrame
+
+    pressure = eos.p .* TOV.MEVFM3_TO_MEV4 .* TOV.MEV4_TO_JOULE .* TOV.SI_TO_PRESSURE_UNIT
+    energy_density = eos.epsilon .* TOV.MEVFM4_TO_MEV4 .* TOV.MEV4_TO_JOULE .* TOV.SI_TO_PRESSURE_UNIT
+
+
+    eos_interp = linear_interpolation(pressure, energy_density)
+    eos(p) = eos_interp(p)
+
+    return eos
+end

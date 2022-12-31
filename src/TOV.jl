@@ -11,7 +11,7 @@ include("diff.jl")
 export Curve, next_point, solve_system!
 
 include("util.jl")
-export plot_curves, write_data, plot_from_datafile
+export plot_curves, write_data, plot_from_datafile, dat2csv, get_eos_from_csv
 
 #dependent files
 include("solver.jl")
