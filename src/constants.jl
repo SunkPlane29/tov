@@ -1,4 +1,6 @@
 #Taken from CODATA (NIST) (I think except for the mass of the sun)
+#TODO: I don't know how to work with precision and errors regarding measurement of
+#physical constants, might be good learning about them
 
 global const c = G = MSOLAR = 1
 
@@ -16,8 +18,7 @@ global const SI_TO_MASS_UNIT::Real       = MASS_UNIT_TO_SI^(-1)     # dimensionl
 global const SI_TO_LENGTH_UNIT::Real     = LENGTH_UNIT_TO_SI^(-1)   # dimensionless
 global const SI_TO_TIME_UNIT::Real       = TIME_UNIT_TO_SI^(-1)     # dimensionless
 
-#TODO: there may be issues with precision regarding this convertion factor
-#also, I don't know how to handle uncertainties and errors, also decimals to use
+#pressure unit (in the system c = G = M⊙ = 1) to SI (and reverse) convertion factor
 global const PRESSURE_UNIT_TO_SI::Real = MASS_UNIT_TO_SI*LENGTH_UNIT_TO_SI^(-1)*TIME_UNIT_TO_SI^(-2) # Pa
 global const SI_TO_PRESSURE_UNIT::Real = PRESSURE_UNIT_TO_SI^(-1)                                    # dimensionless
 
@@ -49,3 +50,8 @@ global const JOULE_TO_EV::Real = EV_TO_JOULE^(-1) #eV
 # make the convertion in this way, but one can always chain convertion factors hehe
 global const MEV4_TO_JOULE::Real = ((si_ħ*10^(-6))*si_c)^(-3) * (EV_TO_JOULE*10^6) #J
 global const JOULE_TO_MEV4::Real = MEV4_TO_JOULE^(-1)                              #MeV⁴
+
+#since the user will most likelly be using a eos defined in a datafile and interpolated in a function, and this eos
+#will also most likelly have units of MeVfm⁻³, I made this utility constant to quickly convert to and from these units
+global const MEVFM3_TO_PRESSURE_UNIT::Real = MEVFM3_TO_MEV4 * MEV4_TO_JOULE * SI_TO_PRESSURE_UNIT
+global const PRESSURE_UNIT_TO_MEVFM3::Real = MEVFM3_TO_PRESSURE_UNIT^(-1)

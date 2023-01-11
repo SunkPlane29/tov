@@ -13,17 +13,14 @@
 #of m or km (for now it's km), the pressure array can be in any units (but one could use units that help
 #with comparison with other sources) and the mass array should always be in units of solar mass
 function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
-    #TODO: i had to choose these initial values very carefully, also, they might affect the solution a bit
-    #too much
-    #NOTE: from what I quickly analised it does change the solution, but the change is not that significant,
-    #the change will be like an error
+    #NOTE: in case I get myself trying to improve the code precision, these initial values might be a
+    #way to start
     r_init = 1e-8
     m_init = 1e-24
     p_init = p₀
 
-    #equation of hydrostatic equilibrium with exception thrown when the pressure is negative
+    #equation of hydrostatic equilibrium
     pressure_eq(r, p, M) = begin
-        #TODO: think of better error management
         if p <= 0
             throw(ErrorException("error: pressure is lesser or equal to zero"))
         end
@@ -48,7 +45,7 @@ function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
     condition_func(i, r, p, M) = p <= 0 || i > 100000 ? false : true
 
     curve = Curve(Float64[], Float64[], Float64[])
-    #TODO: make error handling
+    #TODO: make better error handling
     try
         solve_system!(pressure_eq, mass_eq, r_init, p_init, m_init, curve, stepsize, condition_func)
     catch e
