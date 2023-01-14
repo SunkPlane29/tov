@@ -12,7 +12,7 @@
 #containing the array of pressures and one containing the array of masses. The radius array should be in units
 #of m or km (for now it's km), the pressure array can be in any units (but one could use units that help
 #with comparison with other sources) and the mass array should always be in units of solar mass
-function solve_tov(p₀::Real, eos::Function, stepsize::Real, n::Integer)::Curve
+function solve_tov(p₀::Real, eos::Function, stepsize::Real)::Curve
     #NOTE: in case I get myself trying to improve the code precision, these initial values might be a
     #way to start
     r_init = 1e-8
