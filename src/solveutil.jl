@@ -50,7 +50,7 @@ function solve_mrdiagram(pa::Real, pb::Real, eos::Function; nstars::Integer = 10
     l = ReentrantLock()
     Threads.@threads :dynamic for i = 1:nstars
         p₀ = pa + (i-1)*h
-        curve = solve(p₀, eos, stepsize = stepsize, n = n, write = false)
+        curve = solve(p₀, eos, stepsize = stepsize, write = false)
 
         lock(l)
         try
