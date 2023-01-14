@@ -5,8 +5,8 @@
 #more generic function that calls solve_tov and catches errors that might appear, will also write the curve
 #data to a .csv file unless specified not to
 #user must give an initial pressure and an equation of state (function of pressure) for the star
-function solve(p₀::Real, eos::Function; write::Bool = true, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)::Curve
-    curve = solve_tov(p₀, eos, stepsize, n)
+function solve(p₀::Real, eos::Function; write::Bool = true, stepsize::Real = 200*SI_TO_LENGTH_UNIT)::Curve
+    curve = solve_tov(p₀, eos, stepsize)
 
     if write
         write_data(curve)
@@ -16,15 +16,15 @@ function solve(p₀::Real, eos::Function; write::Bool = true, stepsize::Real = 2
 end
 
 #solve_plot calls solve and plots curves of pressure and mass in a single plot
-function solve_plot(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
-    curve = solve(p₀, eos, stepsize = stepsize, n = n)
+function solve_plot(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT)
+    curve = solve(p₀, eos, stepsize = stepsize)
 
     plot_curves(curve, raw"r(km)", raw"p(erg/cm³)", raw"M (M$_{\odot}$)", "single_star_plot.png")
 end
 
 #solve_data calls solve but does not plot, only writing the data to a file
-function solve_data(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)
-    curve = solve(p₀, eos, stepsize = stepsize, n = n)
+function solve_data(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT)
+    curve = solve(p₀, eos, stepsize = stepsize)
 
     return curve
 end
