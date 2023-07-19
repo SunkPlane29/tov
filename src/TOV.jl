@@ -8,30 +8,13 @@ export c, G, ħ, mₙ, mₑ, si_c, si_G, si_MSOLAR, si_ħ, si_mₙ, si_mₑ, MSO
     MEVFM3_TO_MEV4, EV_TO_JOULE, JOULE_TO_EV, MEV4_TO_JOULE, JOULE_TO_MEV4, MEVFM3_TO_PRESSURE_UNIT,
     PRESSURE_UNIT_TO_MEVFM3
 
-include("diff.jl")
-export Curve, next_point, solve_system!
-
 include("util.jl")
-export plot_curves, write_data, plot_from_datafile, dat2csv
+export dat2csv
 
 #dependent files
 include("solver.jl")
 export solve_tov
 
 include("solveutil.jl")
-export solve, solve_plot, solve_data, solve_mrdiagram
-
-#Polytrope EoS modules
-module WhiteDwarfPolytrope
-    include("constants.jl")
-    include("eos/polytropic_whitedwarf.jl")
-    export A, Z, γ_nonrel, K_NONREL, γ_rel, K_REL, polytrope
-end
-
-module NeutronStarPolytrope
-    include("constants.jl")
-    include("eos/polytropic_neutronstar.jl")
-    export A, Z, γ_nonrel, K_NONREL, γ_rel, K_REL, polytrope
-end
 
 end
