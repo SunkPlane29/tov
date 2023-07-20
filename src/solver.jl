@@ -33,7 +33,7 @@ struct TOVSolution
 end
 
 #NOTE r_max can be changed (for example in solving for white dwarfs)
-function solve_tov(p₀::Real, eos::Function ; r_init::Real=0, r_max::Real=10e5*SI_TO_LENGTH_UNIT)::Curve
+function solve_tov(p₀::Real, eos::Function ; r_init::Real=0, r_max::Real=10e5*SI_TO_LENGTH_UNIT)::TOVSolution
     # don't know why I was still using 1e-24
     m_init = 0.0
     p_init = p₀
@@ -61,4 +61,5 @@ function solve_tov(p₀::Real, eos::Function ; r_init::Real=0, r_max::Real=10e5*
     cb = DiscreteCallback(condition, affect!)
     # Canonical Runge-Kutta Order 4 method. Uses adaptive stepping.
     sol = solve(prob, RK4(), callback = cb)
+    return TOVSolution(p₀, sol.t, sol[1,:], sol[2,:])
 end

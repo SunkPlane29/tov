@@ -1,3 +1,6 @@
+#TODO: make util function for opening and interpolating csv file (linear interpolation for
+#starters)
+
 #functions to convert .dat files (commonly from fortran programs) into .csv files, which
 #are more machine readable. Stolen from stackoverflow.
 function _dat2csv(dat_path::AbstractString, csv_path::AbstractString)::AbstractString
