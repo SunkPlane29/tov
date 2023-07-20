@@ -27,7 +27,13 @@ struct EOS
     eos_fn::Function,
 end
 
-function eos_from_file(file::AbstractString, header::AbstractVector ; iscsv::Bool=true)::EOS
+#NOTE: from this it is clear that the eos file should not already have a header, and, that
+#the headers p and ϵ should be in header
+function eos_from_file(file::AbstractString, header::AbstractVector{String} ; iscsv::Bool=true)::EOS
+    if !("p" in header) || !("ϵ" in header)
+        throw(DomainError("headers p and ϵ must be in header"))
+    end
+
     filename = file
     if !iscsv
         filename = TOV.dat2csv(file)
