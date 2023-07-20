@@ -9,12 +9,10 @@ export c, G, ħ, mₙ, mₑ, si_c, si_G, si_MSOLAR, si_ħ, si_mₙ, si_mₑ, MSO
     PRESSURE_UNIT_TO_MEVFM3
 
 include("util.jl")
-export dat2csv
+export dat2csv, eos_from_file, EOS
 
 #dependent files
 include("solver.jl")
 export solve_tov
-
-include("solveutil.jl")
 
 end
