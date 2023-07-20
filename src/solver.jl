@@ -27,10 +27,10 @@ using OrdinaryDiffEq
 const ErrorPressureZero = "error: pressure is lesser or equal to zero"
 
 struct TOVSolution
-    p₀::Real,
-    r::AbstractVector{Real},
-    p::AbstractVector{Real},
-    M::AbstractVector{Real},
+    p₀::Real
+    r::AbstractVector{Real}
+    p::AbstractVector{Real}
+    M::AbstractVector{Real}
 end
 
 #NOTE r_max can be changed (for example in solving for white dwarfs)
@@ -54,8 +54,6 @@ function solve_tov(p₀::Real, eos::Function ; rinit::Real=0, rmax::Real=10e5*SI
     u0 = [p_init, m_init]
     tspan = (r_init, r_max)
     prob = ODEProblem(f, u0, tspan)
-
-    # TODO: find a way to call a solve method that allows to break the solving at any point
 
     condition(u, t, integrator) = u[1] <= 0
     affect!(integrator) = terminate!(integrator)

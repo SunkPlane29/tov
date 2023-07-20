@@ -2,10 +2,10 @@ using TOV
 using Test
 
 struct ExpectedSolution
-    p₀::Real,
-    p::Real,
-    R::Real,
-    M::Real,
+    p₀::Real
+    p::Real
+    R::Real
+    M::Real
 end
 
 # For p₀=1.0MeV/fm³ we have R=19.884000014770535km and M=0.3295759365485324MSOLAR

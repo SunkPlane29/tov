@@ -21,10 +21,10 @@ function remove_negative_slopes(eos::DataFrame)::DataFrame
 end
 
 struct EOS
-    pressure::AbstractVector{Real},
-    energy_density::AbstractVector{Real},
-    eos_interp::Interpolations.Extrapolations,
-    eos_fn::Function,
+    pressure::AbstractVector{Real}
+    energy_density::AbstractVector{Real}
+    eos_interp::Interpolations.Extrapolations
+    eos_fn::Function
 end
 
 #NOTE: from this it is clear that the eos file should not already have a header, and, that
