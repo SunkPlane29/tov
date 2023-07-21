@@ -1,4 +1,6 @@
-using TOV, Test
+using TOV
+using Test
+using SafeTestsets
 
 @time begin
     @time @safetestset "Single Star Fermi Gas EoS" begin

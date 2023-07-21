@@ -13,6 +13,6 @@ export dat2csv, eos_from_file, EOS
 
 #dependent files
 include("solver.jl")
-export solve_tov
+export solve_tov, solve_sequence
 
 end

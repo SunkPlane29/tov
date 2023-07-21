@@ -17,19 +17,19 @@ function remove_negative_slopes(eos::DataFrame)::DataFrame
         end
     end
 
-    return new_eos
+    return neweos
 end
 
 struct EOS
     pressure::AbstractVector{Real}
     energy_density::AbstractVector{Real}
-    eos_interp::Interpolations.Extrapolations
-    eos_fn::Function
+    eos_interp::Interpolations.Extrapolation
+    eos_function::Function
 end
 
 #NOTE: from this it is clear that the eos file should not already have a header, and, that
 #the headers p and ϵ should be in header
-function eos_from_file(file::AbstractString, header::AbstractVector{String} ; iscsv::Bool=true)::EOS
+function eos_from_file(file::AbstractString, header::AbstractVector{String} ; iscsv::Bool=true)#::EOS
     if !("p" in header) || !("ϵ" in header)
         throw(DomainError("headers p and ϵ must be in header"))
     end
@@ -45,10 +45,12 @@ function eos_from_file(file::AbstractString, header::AbstractVector{String} ; is
     pressure = eos.p .* MEVFM3_TO_PRESSURE_UNIT
     energy_density = eos.ϵ .* MEVFM3_TO_PRESSURE_UNIT
 
-    eos_interp = linear_interpolation(pressure, energy_density)
-    eos_fn(p) = eos_interp(p)
+    eos_interp = linear_interpolation(pressure, energy_density, extrapolation_bc=Line())
+    eos_function(p) = begin
+        eos_interp(p)
+    end
 
-    return EOS(pressure, energy_density, eos_interp, eos_fn)
+    return EOS(pressure, energy_density, eos_interp, eos_function)
 end
 
 #functions to convert .dat files (commonly from fortran programs) into .csv files, which

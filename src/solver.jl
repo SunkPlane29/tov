@@ -33,17 +33,26 @@ struct TOVSolution
     M::AbstractVector{Real}
 end
 
+function tov_eq(r::Real, p::Real, M::Real, eos::Function)::Real
+    -(eos(p)*M/r^2)*(1 + p/eos(p))*(1 + 4π*r^3*p/M)*(1 - 2M/r)^(-1)
+end
+
+function mass_continuity_eq(r::Real, p::Real, M::Real, eos::Function)::Real
+    4π*r^2*eos(p)
+end
+
+#FIXME: not working properly
+
 #NOTE r_max can be changed (for example in solving for white dwarfs)
-function solve_tov(p₀::Real, eos::Function ; rinit::Real=0, rmax::Real=10e5*SI_TO_LENGTH_UNIT)::TOVSolution
-    # don't know why I was still using 1e-24
-    m_init = 0.0
-    p_init = p₀
+function solve_tov(p₀::Real, eos::Function ; rinit::Real=0.0, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
+    minit = 1e-24
+    pinit = p₀
 
     pressure_eq(r, p, M) = begin
-        r == 0 ? 0 : (-eos(p)*M/r^2)*(1 + p/eos(p))*(1 + 4πr^3*p/M)*(1 - 2M/r)^(-1)
+        tov_eq(r, p, M, eos)
     end
     mass_eq(r, p, M) = begin
-        4π*r^2*eos(p)
+        mass_continuity_eq(r, p, M, eos)
     end
 
     f(du, u, p, t) = begin
@@ -51,18 +60,67 @@ function solve_tov(p₀::Real, eos::Function ; rinit::Real=0, rmax::Real=10e5*SI
         du[2] = mass_eq(t, u[1], u[2])
     end
 
-    u0 = [p_init, m_init]
-    tspan = (r_init, r_max)
+    u0 = [pinit, minit]
+    tspan = (rinit, rmax)
     prob = ODEProblem(f, u0, tspan)
 
-    condition(u, t, integrator) = u[1] <= 0
+    condition(u, t, integrator) = begin
+        abs(u[1]) <= eps
+    end
     affect!(integrator) = terminate!(integrator)
     cb = DiscreteCallback(condition, affect!)
     # Canonical Runge-Kutta Order 4 method. Uses adaptive stepping.
     sol = solve(prob, RK4(), callback = cb)
-    return TOVSolution(p₀, sol.t, sol[1,:], sol[2,:])
+    return TOVSolution(p₀, sol.t.*LENGTH_UNIT_TO_SI.*1e-3, sol[1,:]*PRESSURE_UNIT_TO_MEVFM3, sol[2,:])
 end
 
-function solve_tov(p₀::Real, eos::EOS ; rinit::Real=0, rmax::Real=10e5*SI_TO_LENGTH_UNIT)::TOVSolution
-    return solve_tov(p₀,, eos.eos_fn, rinit=rinit, rmax=rmax)
+function solve_tov(p₀::Real, eos::EOS ; rinit::Real=0.0, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
+    return solve_tov(p₀, eos.eos_function, rinit=rinit, rmax=rmax, eps=eps)
+end
+
+struct SequenceSolution
+    p₀::AbstractVector{Real}
+    R::AbstractVector{Real}
+    M::AbstractVector{Real}
+end
+
+#FIXME: not working properly
+
+function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=0.0, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)
+    minit = fill(1e-24, length(p₀))
+    pinit = p₀
+
+    pressure_eq(r, p, M) = begin
+        tov_eq(r, p, M, eos)
+    end
+    mass_eq(r, p, M) = begin
+        mass_continuity_eq(r, p, M, eos)
+    end
+
+    f(du, u, p, t) = begin
+        du[1] = pressure_eq(t, u[1], u[2])
+        du[2] = mass_eq(t, u[1], u[2])
+    end
+
+    u0 = [pinit[1], minit[1]]
+    tspan = (rinit, rmax)
+    prob = ODEProblem(f, u0, tspan)
+
+    #FIXME: ugly repeated code here
+    condition(u, t, integrator) = begin
+        abs(u[1]) <= eps
+    end
+    affect!(integrator) = terminate!(integrator)
+    cb = DiscreteCallback(condition, affect!)
+
+    prob_func = (prob, i, repeat) -> remake(prob, u0=[pinit[1], minit[i]])
+    ensemble_prob = EnsembleProblem(prob, prob_func=prob_func, safetycopy=false)
+
+    sol = solve(ensemble_prob, RK4(), EnsembleThreads(), trajectories=length(pinit))
+
+    return sol
+end
+
+function solve_sequence(p₀::AbstractVector{Real}, eos::EOS ; rinit::Real=0.0, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)
+    return solve_sequence(p₀, eos.eos_function, rinit=rinit, rmax=rmax, eps=eps)
 end
