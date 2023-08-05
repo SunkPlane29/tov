@@ -37,9 +37,10 @@ using DataFrames
 #preter is called with --threads (nthreads) argument
 #NOTE: this function uses all threads avaliable in julia program (a library shouldn't do multithreaded code, but
 #I think this solution is suitable here, since it reduces in 50%+ the execution time)
-#TODO: there might be a solution using GPU, but this solution can be in another function
-#TODO: test https://juliagpu.github.io/KernelAbstractions.jl/stable/
-function solve_mrdiagram(pa::Real, pb::Real, eos::Function; nstars::Integer = 1000, stepsize::Real = 200*SI_TO_LENGTH_UNIT, n::Integer = 100000)::Curve
+function solve_mrdiagram(pa::Real, pb::Real, eos::Function;
+                         write_csv::Bool = true, plot::Bool = true, nstars::Integer = 1000, stepsize::Real = 1*SI_TO_LENGTH_UNIT,
+                         n::Integer = 100000)::Curve
+
     h = (pb - pa)/nstars
 
     pvalues = []
@@ -69,10 +70,13 @@ function solve_mrdiagram(pa::Real, pb::Real, eos::Function; nstars::Integer = 10
     Rvalues = Rvalues[perm]
     Mvalues = Mvalues[perm]
 
-    df = DataFrame()
-    df.radius = Rvalues
-    df.mass = Mvalues
-    CSV.write("mrdiagram.csv", df)
+    if write_csv
+        df = DataFrame()
+        df.p0 = pvalues
+        df.radius = Rvalues
+        df.mass = Mvalues
+        CSV.write("mrdiagram.csv", df)
+    end
 
     p = plot(Rvalues, Mvalues, legend = false, show = false)
     xlabel!(p, raw"Radius (km)")
