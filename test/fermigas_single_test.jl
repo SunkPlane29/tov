@@ -20,7 +20,7 @@ eosheader = ["p", "ϵ"]
 eos = eos_from_file(eosfile, eosheader)
 
 want = ExpectedSolution(1.0, 0.0, 19.884000014770535, 0.3295759365485324)
-solution = solve_tov(want.p₀*MEVFM3_TO_PRESSURE_UNIT, eos, eps=1e-10)
+solution = solve_tov(want.p₀*MEVFM3_TO_PRESSURE_UNIT, eos, eps=1.73e-20)
 
 p = last(solution.p)
 R = last(solution.r)

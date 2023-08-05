@@ -44,8 +44,7 @@ end
 #FIXME: not working properly
 
 #NOTE r_max can be changed (for example in solving for white dwarfs)
-function solve_tov(p₀::Real, eos::Function ; rinit::Real=0.0, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
-    minit = 1e-24
+function solve_tov(p₀::Real, eos::Function ; rinit::Real=0.0, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
     pinit = p₀
 
     pressure_eq(r, p, M) = begin
@@ -113,7 +112,7 @@ function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=
     affect!(integrator) = terminate!(integrator)
     cb = DiscreteCallback(condition, affect!)
 
-    prob_func = (prob, i, repeat) -> remake(prob, u0=[pinit[1], minit[i]])
+    prob_func = (prob, i, repeat) -> remake(prob, u0=[pinit[i], minit[1]])
     ensemble_prob = EnsembleProblem(prob, prob_func=prob_func, safetycopy=false)
 
     sol = solve(ensemble_prob, RK4(), EnsembleThreads(), trajectories=length(pinit))
