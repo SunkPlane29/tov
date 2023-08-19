@@ -19,7 +19,7 @@
 #
 # -------------------------------------------------------------------------
 
-using TOV
+# using TOV
 #NOTE: using DifferentialEquations package I should cite the author of this code
 using SciMLBase
 using OrdinaryDiffEq
@@ -33,6 +33,8 @@ struct TOVSolution
     M::AbstractVector{Real}
 end
 
+using Printf
+
 function tov_eq(r::Real, p::Real, M::Real, eos::Function)::Real
     -(eos(p)*M/r^2)*(1 + p/eos(p))*(1 + 4π*r^3*p/M)*(1 - 2M/r)^(-1)
 end
@@ -41,11 +43,11 @@ function mass_continuity_eq(r::Real, p::Real, M::Real, eos::Function)::Real
     4π*r^2*eos(p)
 end
 
-#FIXME: not working properly
-
-#NOTE r_max can be changed (for example in solving for white dwarfs)
-function solve_tov(p₀::Real, eos::Function ; rinit::Real=0.0, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
+function solve_tov(p₀::Real, eos::Function ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
     pinit = p₀
+    if rinit == 0
+        rinit = 1e-8
+    end
 
     pressure_eq(r, p, M) = begin
         tov_eq(r, p, M, eos)
@@ -63,8 +65,28 @@ function solve_tov(p₀::Real, eos::Function ; rinit::Real=0.0, minit::Real=1e-2
     tspan = (rinit, rmax)
     prob = ODEProblem(f, u0, tspan)
 
+    rprev = 0.0
+    mprev = 0.0
+    pprev = 0.0
+    #first 10 or so could trick these into thinking its converging
+    i = 0
     condition(u, t, integrator) = begin
-        abs(u[1]) <= eps
+        rtemp = rprev
+        ptemp = pprev
+        mtemp = mprev
+        rprev = t
+        pprev = u[1]
+        mprev = u[2]
+        i += 1
+
+        #NOTE: pressure convergence appears to be better
+        if rtemp == 0.0
+            return false
+        elseif abs(ptemp - u[1]) <= eps && i > 10
+            return true
+        end
+
+        return false
     end
     affect!(integrator) = terminate!(integrator)
     cb = DiscreteCallback(condition, affect!)
@@ -82,8 +104,6 @@ struct SequenceSolution
     R::AbstractVector{Real}
     M::AbstractVector{Real}
 end
-
-#FIXME: not working properly
 
 function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=0.0, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)
     minit = fill(1e-24, length(p₀))
