@@ -59,6 +59,18 @@ function get_diff_eq_system(eos::Function)::Function
     return f
 end
 
+function condition_func(eps::Real)
+    condition(u, t, integrator) = begin
+        if abs(integrator.uprev[1] - u[1]) <= eps && abs(integrator.uprev[1]) <= eps
+            return true
+        end
+
+        return false
+    end
+
+    return condition
+end
+
 function solve_tov(p₀::Real, eos::Function ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
     pinit = p₀
     if rinit == 0
@@ -71,29 +83,7 @@ function solve_tov(p₀::Real, eos::Function ; rinit::Real=1e-8, minit::Real=1e-
     tspan = (rinit, rmax)
     prob = ODEProblem(f, u0, tspan)
 
-    rprev = 0.0
-    mprev = 0.0
-    pprev = 0.0
-    #first 10 or so could trick these into thinking its converging
-    i = 0
-    condition(u, t, integrator) = begin
-        rtemp = rprev
-        ptemp = pprev
-        mtemp = mprev
-        rprev = t
-        pprev = u[1]
-        mprev = u[2]
-        i += 1
-
-        #NOTE: pressure convergence appears to be better
-        if rtemp == 0.0
-            return false
-        elseif abs(ptemp - u[1]) <= eps && i > 10
-            return true
-        end
-
-        return false
-    end
+    condition = condition_func(eps)
     affect!(integrator) = terminate!(integrator)
     cb = DiscreteCallback(condition, affect!)
     # Canonical Runge-Kutta Order 4 method. Uses adaptive stepping.
@@ -121,30 +111,7 @@ function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=
     tspan = (rinit, rmax)
     prob = ODEProblem(f, u0, tspan)
 
-    #FIXME: ugly repeated code here, don't know how to make it better
-    rprev = 0.0
-    mprev = 0.0
-    pprev = 0.0
-    i = 0
-
-    #FIXME: this method makes to that it's not good to use multithreaded
-    condition(u, t, integrator) = begin
-        rtemp = rprev
-        ptemp = pprev
-        mtemp = mprev
-        rprev = t
-        pprev = u[1]
-        mprev = u[2]
-        i += 1
-
-        if rtemp == 0.0
-            return false
-        elseif abs(ptemp - u[1]) <= eps && i > 10
-            return true
-        end
-
-        return false
-    end
+    condition = condition_func(eps)
     affect!(integrator) = terminate!(integrator)
     cb = DiscreteCallback(condition, affect!)
 

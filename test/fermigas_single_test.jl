@@ -1,4 +1,6 @@
-using TOV
+include("../src/TOV.jl")
+using .TOV
+# using TOV
 using Test
 
 struct ExpectedSolution
@@ -12,7 +14,7 @@ end
 # For p₀=10.0MeV/fm³ we have R=14.869000014766742km and M=0.5344830305160919MSOLAR
 # For p₀=25.0MeV/fm³ we have R=13.054000014765366km and M=0.6133481871959284MSOLAR
 
-BASEPATH = dirname(dirname(pathof(TOV)))
+# BASEPATH = dirname(dirname(pathof(TOV)))
 BASEPATH = ".."
 eosfile = joinpath(BASEPATH, "test", "eos", "fermigas.csv")
 eosheader = ["p", "ϵ"]
