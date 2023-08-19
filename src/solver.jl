@@ -126,6 +126,8 @@ function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=
     mprev = 0.0
     pprev = 0.0
     i = 0
+
+    #FIXME: this method makes to that it's not good to use multithreaded
     condition(u, t, integrator) = begin
         rtemp = rprev
         ptemp = pprev
