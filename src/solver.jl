@@ -101,13 +101,13 @@ struct SequenceSolution
     M::AbstractVector{Real}
 end
 
-function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=0.0, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)
-    minit = fill(1e-24, length(p₀))
+function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=0.0, minit::Real=1e-24,
+                        rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::SequenceSolution
     pinit = p₀
 
     f = get_diff_eq_system(eos)
 
-    u0 = [pinit[1], minit[1]]
+    u0 = [pinit[1], minit]
     tspan = (rinit, rmax)
     prob = ODEProblem(f, u0, tspan)
 
@@ -115,14 +115,23 @@ function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=
     affect!(integrator) = terminate!(integrator)
     cb = DiscreteCallback(condition, affect!)
 
-    prob_func = (prob, i, repeat) -> remake(prob, u0=[pinit[i], minit[1]])
+    prob_func = (prob, i, repeat) -> remake(prob, u0=[pinit[i], minit])
     ensemble_prob = EnsembleProblem(prob, prob_func=prob_func, safetycopy=false)
 
-    sol = solve(ensemble_prob, RK4(), EnsembleThreads(), trajectories=length(pinit))
+    sol = solve(ensemble_prob, RK4(), EnsembleThreads(), callback=cb, trajectories=length(pinit))
 
-    return sol
+    R = []
+    M = []
+
+    for soli in sol
+        append!(R, last(soli.t)*LENGTH_UNIT_TO_SI*1e-3)
+        append!(M, last(soli.u)[2])
+    end
+
+    return SequenceSolution(p₀ .* PRESSURE_UNIT_TO_MEVFM3, R, M)
 end
 
-function solve_sequence(p₀::AbstractVector{Real}, eos::EOS ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)
+function solve_sequence(p₀::AbstractVector{Real}, eos::EOS ; rinit::Real=1e-8, minit::Real=1e-24,
+                        rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::SequenceSolution
     return solve_sequence(p₀, eos.eos_function, rinit=rinit, minit=minit, rmax=rmax, eps=eps)
 end
