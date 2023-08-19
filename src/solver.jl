@@ -43,12 +43,7 @@ function mass_continuity_eq(r::Real, p::Real, M::Real, eos::Function)::Real
     4π*r^2*eos(p)
 end
 
-function solve_tov(p₀::Real, eos::Function ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
-    pinit = p₀
-    if rinit == 0
-        rinit = 1e-8
-    end
-
+function get_diff_eq_system(eos::Function)::Function
     pressure_eq(r, p, M) = begin
         tov_eq(r, p, M, eos)
     end
@@ -60,6 +55,17 @@ function solve_tov(p₀::Real, eos::Function ; rinit::Real=1e-8, minit::Real=1e-
         du[1] = pressure_eq(t, u[1], u[2])
         du[2] = mass_eq(t, u[1], u[2])
     end
+
+    return f
+end
+
+function solve_tov(p₀::Real, eos::Function ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
+    pinit = p₀
+    if rinit == 0
+        rinit = 1e-8
+    end
+
+    f = get_diff_eq_system(eos)
 
     u0 = [pinit, minit]
     tspan = (rinit, rmax)
@@ -95,7 +101,7 @@ function solve_tov(p₀::Real, eos::Function ; rinit::Real=1e-8, minit::Real=1e-
     return TOVSolution(p₀, sol.t.*LENGTH_UNIT_TO_SI.*1e-3, sol[1,:]*PRESSURE_UNIT_TO_MEVFM3, sol[2,:])
 end
 
-function solve_tov(p₀::Real, eos::EOS ; rinit::Real=0.0, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
+function solve_tov(p₀::Real, eos::EOS ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
     return solve_tov(p₀, eos.eos_function, rinit=rinit, rmax=rmax, eps=eps)
 end
 
@@ -105,29 +111,37 @@ struct SequenceSolution
     M::AbstractVector{Real}
 end
 
-function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=0.0, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)
+function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=0.0, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)
     minit = fill(1e-24, length(p₀))
     pinit = p₀
 
-    pressure_eq(r, p, M) = begin
-        tov_eq(r, p, M, eos)
-    end
-    mass_eq(r, p, M) = begin
-        mass_continuity_eq(r, p, M, eos)
-    end
-
-    f(du, u, p, t) = begin
-        du[1] = pressure_eq(t, u[1], u[2])
-        du[2] = mass_eq(t, u[1], u[2])
-    end
+    f = get_diff_eq_system(eos)
 
     u0 = [pinit[1], minit[1]]
     tspan = (rinit, rmax)
     prob = ODEProblem(f, u0, tspan)
 
-    #FIXME: ugly repeated code here
+    #FIXME: ugly repeated code here, don't know how to make it better
+    rprev = 0.0
+    mprev = 0.0
+    pprev = 0.0
+    i = 0
     condition(u, t, integrator) = begin
-        abs(u[1]) <= eps
+        rtemp = rprev
+        ptemp = pprev
+        mtemp = mprev
+        rprev = t
+        pprev = u[1]
+        mprev = u[2]
+        i += 1
+
+        if rtemp == 0.0
+            return false
+        elseif abs(ptemp - u[1]) <= eps && i > 10
+            return true
+        end
+
+        return false
     end
     affect!(integrator) = terminate!(integrator)
     cb = DiscreteCallback(condition, affect!)
@@ -140,6 +154,6 @@ function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=
     return sol
 end
 
-function solve_sequence(p₀::AbstractVector{Real}, eos::EOS ; rinit::Real=0.0, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)
-    return solve_sequence(p₀, eos.eos_function, rinit=rinit, rmax=rmax, eps=eps)
+function solve_sequence(p₀::AbstractVector{Real}, eos::EOS ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)
+    return solve_sequence(p₀, eos.eos_function, rinit=rinit, minit=minit, rmax=rmax, eps=eps)
 end
