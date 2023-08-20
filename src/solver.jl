@@ -28,9 +28,9 @@ const ErrorPressureZero = "error: pressure is lesser or equal to zero"
 
 struct TOVSolution
     p₀::Real
-    r::AbstractVector{Real}
-    p::AbstractVector{Real}
-    M::AbstractVector{Real}
+    r::AbstractVector
+    p::AbstractVector
+    M::AbstractVector
 end
 
 using Printf
@@ -71,7 +71,8 @@ function condition_func(eps::Real)
     return condition
 end
 
-function solve_tov(p₀::Real, eos::Function ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
+function solve_tov(p₀::Real, eos::Function ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT,
+                   eps::Real=1e-10)::TOVSolution
     pinit = p₀
     if rinit == 0
         rinit = 1e-8
@@ -91,17 +92,18 @@ function solve_tov(p₀::Real, eos::Function ; rinit::Real=1e-8, minit::Real=1e-
     return TOVSolution(p₀, sol.t.*LENGTH_UNIT_TO_SI.*1e-3, sol[1,:]*PRESSURE_UNIT_TO_MEVFM3, sol[2,:])
 end
 
-function solve_tov(p₀::Real, eos::EOS ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::TOVSolution
+function solve_tov(p₀::Real, eos::EOS ; rinit::Real=1e-8, minit::Real=1e-24, rmax::Real=10e5*SI_TO_LENGTH_UNIT,
+                   eps::Real=1e-10)::TOVSolution
     return solve_tov(p₀, eos.eos_function, rinit=rinit, rmax=rmax, eps=eps)
 end
 
 struct SequenceSolution
-    p₀::AbstractVector{Real}
-    R::AbstractVector{Real}
-    M::AbstractVector{Real}
+    p₀::AbstractVector
+    R::AbstractVector
+    M::AbstractVector
 end
 
-function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=0.0, minit::Real=1e-24,
+function solve_sequence(p₀::AbstractVector, eos::Function ; rinit::Real=0.0, minit::Real=1e-24,
                         rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::SequenceSolution
     pinit = p₀
 
@@ -131,7 +133,7 @@ function solve_sequence(p₀::AbstractVector{Real}, eos::Function ; rinit::Real=
     return SequenceSolution(p₀ .* PRESSURE_UNIT_TO_MEVFM3, R, M)
 end
 
-function solve_sequence(p₀::AbstractVector{Real}, eos::EOS ; rinit::Real=1e-8, minit::Real=1e-24,
+function solve_sequence(p₀::AbstractVector, eos::EOS ; rinit::Real=1e-8, minit::Real=1e-24,
                         rmax::Real=10e5*SI_TO_LENGTH_UNIT, eps::Real=1e-10)::SequenceSolution
     return solve_sequence(p₀, eos.eos_function, rinit=rinit, minit=minit, rmax=rmax, eps=eps)
 end
