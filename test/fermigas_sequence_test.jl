@@ -17,23 +17,28 @@ eosheader = ["ρb", "p", "ϵ"]
 # eosheader = ["T", "n_b", "Y_q", "p", "ϵ"]
 eos = TOV.eos_from_file(eosfile, eosheader)
 
-p₀ = eos.pressure
-# p₀ = collect(range(eos.pressure[1], last(eos.pressure), length=300))
+# p₀ = eos.pressure
+p₀ = collect(range(eos.pressure[1], last(eos.pressure), length=300))
 
 #1e-8 para fermigas
 #1e-4 para quarkmatter or 5.82210288e-5 (maximum precision?)
 #1e-7 para cmf
-# sol = TOV.solve_sequence(p₀, eos, eps=1e-8)
-sol = TOV.solve_sequence(p₀, eos, eps=1e-4)
-# sol = TOV.solve_sequence(p₀, eos, eps=1e-7)
+# sol = TOV.solve_sequence(p₀, eos, eps=1e-8, dtmin=1e-4*TOV.SI_TO_LENGTH_UNIT)
+sol = TOV.solve_sequence(p₀, eos, eps=1e-4, dtmin=1e-4*TOV.SI_TO_LENGTH_UNIT)
+# sol = TOV.solve_sequence(p₀, eos, eps=1e-7, dtmin=1*TOV.SI_TO_LENGTH_UNIT)
 
+println(maximum(sol.R))
 println(maximum(sol.M))
 
 #NOTE: the error is most likelly in the solving of the TOV equations,
 #specifically where I use a convergence cut-off
 #NOTE: when settings eps for the cutoff, when eps ~ 1e-5 the mass starts
 #to have artifacts just like the radius. Also, for more accurate maximum
+#NOTE: I was able to set a minumum to the adaptive stepsize of the RK
+#algorithm but the numeric errors are still there, why?
 #masses, we need more precise eps (of order ~ 1e-8)
+#NOTE: Minimum stepsize helped in the case of quarkmatter eos but made it
+#worse in the case of cmf eos and also in the case of fermigas eos
 #TODO: maybe I can get the order of magnitude of the pressure that
 #has converged and use that same order of magnitude in all the other
 #pressures (this would rely on channels I think)
