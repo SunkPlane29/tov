@@ -5,27 +5,39 @@ using .TOV
 using Test
 
 using Plots
+using Printf
 
 # BASEPATH = dirname(dirname(pathof(TOV)))
 BASEPATH = ".."
-# eosfile = joinpath(BASEPATH, "test", "eos", "fermigas.csv")
+eosfile = joinpath(BASEPATH, "test", "eos", "fermigas.csv")
 # eosfile = joinpath(BASEPATH, "test", "eos", "fermigaslarge.csv")
-eosfile = joinpath(BASEPATH, "test", "eos", "quarkmatter.csv")
+# eosfile = joinpath(BASEPATH, "test", "eos", "quarkmatter.csv")
 # eosfile = joinpath(BASEPATH, "test", "eos", "cmf.csv")
-# eosheader = ["p", "ϵ"]
-eosheader = ["ρb", "p", "ϵ"]
+eosheader = ["p", "ϵ"]
+# eosheader = ["ρb", "p", "ϵ"]
 # eosheader = ["T", "n_b", "Y_q", "p", "ϵ"]
 eos = TOV.eos_from_file(eosfile, eosheader)
 
-# p₀ = eos.pressure
-p₀ = collect(range(eos.pressure[1], last(eos.pressure), length=300))
+#NOTE: using the same p₀ (without interpolation) leads probably to
+#lesser errors
+p₀ = eos.pressure
+# p₀ = collect(range(eos.pressure[1], last(eos.pressure), length=300))
 
-#1e-8 para fermigas
+singlesol = TOV.solve_tov(200*TOV.MEVFM3_TO_PRESSURE_UNIT, eos, eps=1e-8)
+plot(singlesol.r, singlesol.p,
+     title=@sprintf("R: %.4f, M: %.4f, p₀: %.4e", last(singlesol.r),
+                    last(singlesol.M), last(singlesol.p₀)))
+savefig("rp.png")
+plot(singlesol.r, singlesol.M)
+savefig("rM.png")
+
+#1e-8 para fermigas (1e-7 for large)
 #1e-4 para quarkmatter or 5.82210288e-5 (maximum precision?)
 #1e-7 para cmf
-# sol = TOV.solve_sequence(p₀, eos, eps=1e-8, dtmin=1e-4*TOV.SI_TO_LENGTH_UNIT)
-sol = TOV.solve_sequence(p₀, eos, eps=1e-4, dtmin=1e-4*TOV.SI_TO_LENGTH_UNIT)
-# sol = TOV.solve_sequence(p₀, eos, eps=1e-7, dtmin=1*TOV.SI_TO_LENGTH_UNIT)
+sol = TOV.solve_sequence(p₀, eos, eps=1e-8)
+# sol = TOV.solve_sequence(p₀, eos, eps=1e-7)
+# sol = TOV.solve_sequence(p₀, eos, eps=1e-4)
+# sol = TOV.solve_sequence(p₀, eos, eps=1e-7)
 
 println(maximum(sol.R))
 println(maximum(sol.M))
@@ -39,11 +51,9 @@ println(maximum(sol.M))
 #masses, we need more precise eps (of order ~ 1e-8)
 #NOTE: Minimum stepsize helped in the case of quarkmatter eos but made it
 #worse in the case of cmf eos and also in the case of fermigas eos
-#TODO: maybe I can get the order of magnitude of the pressure that
-#has converged and use that same order of magnitude in all the other
-#pressures (this would rely on channels I think)
-#TODO: maybe I can let user choose between conversion in pressure or mass
-#or even choose for a fixed stepsize method
+#NOTE: stepsize in quarkmatter eos might just be off, because the equation
+#is so stiff, it might be overdoing the step
+#TODO: the error might be in interpolation?
 
 plot(sol.p₀, sol.R, xlim=(-10, 1000), ylim=(0, 20), seriestype=:scatter,
      show=true, size=(1200, 900))
