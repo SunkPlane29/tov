@@ -9,12 +9,12 @@ using Printf
 
 # BASEPATH = dirname(dirname(pathof(TOV)))
 BASEPATH = ".."
-eosfile = joinpath(BASEPATH, "test", "eos", "fermigas.csv")
+# eosfile = joinpath(BASEPATH, "test", "eos", "fermigas.csv")
 # eosfile = joinpath(BASEPATH, "test", "eos", "fermigaslarge.csv")
-# eosfile = joinpath(BASEPATH, "test", "eos", "quarkmatter.csv")
+eosfile = joinpath(BASEPATH, "test", "eos", "quarkmatter.csv")
 # eosfile = joinpath(BASEPATH, "test", "eos", "cmf.csv")
-eosheader = ["p", "ϵ"]
-# eosheader = ["ρb", "p", "ϵ"]
+# eosheader = ["p", "ϵ"]
+eosheader = ["ρb", "p", "ϵ"]
 # eosheader = ["T", "n_b", "Y_q", "p", "ϵ"]
 eos = TOV.eos_from_file(eosfile, eosheader)
 
@@ -34,9 +34,9 @@ savefig("rM.png")
 #1e-8 para fermigas (1e-7 for large)
 #1e-4 para quarkmatter or 5.82210288e-5 (maximum precision?)
 #1e-7 para cmf
-sol = TOV.solve_sequence(p₀, eos, eps=1e-8)
+# sol = TOV.solve_sequence(p₀, eos, eps=1e-8)
 # sol = TOV.solve_sequence(p₀, eos, eps=1e-7)
-# sol = TOV.solve_sequence(p₀, eos, eps=1e-4)
+sol = TOV.solve_sequence(p₀, eos, eps=1e-4)
 # sol = TOV.solve_sequence(p₀, eos, eps=1e-7)
 
 println(maximum(sol.R))

@@ -61,6 +61,10 @@ end
 
 function condition_func(eps::Real)
     condition(u, t, integrator) = begin
+        if u[1] < 0
+            return true
+        end
+
         if abs(integrator.uprev[1] - u[1]) <= eps && abs(integrator.uprev[1]) <= eps
             return true
         end
