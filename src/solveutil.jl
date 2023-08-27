@@ -5,8 +5,9 @@
 #more generic function that calls solve_tov and catches errors that might appear, will also write the curve
 #data to a .csv file unless specified not to
 #user must give an initial pressure and an equation of state (function of pressure) for the star
-function solve(p₀::Real, eos::Function; write::Bool = true, stepsize::Real = 200*SI_TO_LENGTH_UNIT)::Curve
-    curve = solve_tov(p₀, eos, stepsize)
+function solve(p₀::Real, eos::Function;
+               write::Bool=true, stepsize::Real=1*SI_TO_LENGTH_UNIT, n::Integer=100_000)::Curve
+    curve = solve_tov(p₀, eos, stepsize, n=n)
 
     if write
         write_data(curve)
@@ -16,15 +17,17 @@ function solve(p₀::Real, eos::Function; write::Bool = true, stepsize::Real = 2
 end
 
 #solve_plot calls solve and plots curves of pressure and mass in a single plot
-function solve_plot(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT)
-    curve = solve(p₀, eos, stepsize = stepsize)
+function solve_plot(p₀::Real, eos::Function;
+                    stepsize::Real=1*SI_TO_LENGTH_UNIT, n::Integer=100_000, name::String="single_star_plot.png")
+    curve = solve(p₀, eos, stepsize=stepsize, n=n)::Curve
 
-    plot_curves(curve, raw"r(km)", raw"p(erg/cm³)", raw"M (M$_{\odot}$)", "single_star_plot.png")
+    plot_curves(curve, raw"r (km)", raw"p (MeV/fm³)", raw"M (M$_{\odot}$)", name)
 end
 
 #solve_data calls solve but does not plot, only writing the data to a file
-function solve_data(p₀::Real, eos::Function; stepsize::Real = 200*SI_TO_LENGTH_UNIT)
-    curve = solve(p₀, eos, stepsize = stepsize)
+function solve_data(p₀::Real, eos::Function;
+                    stepsize::Real=1*SI_TO_LENGTH_UNIT, n::Integer=100_000)::Curve
+    curve = solve(p₀, eos, stepsize=stepsize, n=n)
 
     return curve
 end
@@ -38,8 +41,9 @@ using DataFrames
 #NOTE: this function uses all threads avaliable in julia program (a library shouldn't do multithreaded code, but
 #I think this solution is suitable here, since it reduces in 50%+ the execution time)
 function solve_mrdiagram(pa::Real, pb::Real, eos::Function;
-                         write_csv::Bool = true, plot::Bool = true, nstars::Integer = 1000, stepsize::Real = 1*SI_TO_LENGTH_UNIT,
-                         n::Integer = 100000)::Curve
+                         write_csv::Bool=true, plot::Bool=true, csvname::String="mrdiagram.csv",
+                         plotname::String="mrdiagram.csv", nstars::Integer=500, stepsize::Real=1*SI_TO_LENGTH_UNIT,
+                         n::Integer=100_000)::Curve
 
     h = (pb - pa)/nstars
 
@@ -51,7 +55,7 @@ function solve_mrdiagram(pa::Real, pb::Real, eos::Function;
     l = ReentrantLock()
     Threads.@threads :dynamic for i = 1:nstars
         p₀ = pa + (i-1)*h
-        curve = solve(p₀, eos, stepsize = stepsize, write = false)
+        curve = solve(p₀, eos, stepsize=stepsize, write=false)
 
         lock(l)
         try
@@ -65,7 +69,7 @@ function solve_mrdiagram(pa::Real, pb::Real, eos::Function;
 
     #since the tov was solved in a multithreaded way, the resulting M and R values are unordered, to solve this
     #one can simply apply a sort in p₀ values and then apply the same sorting on M and R values
-    perm = sortperm(pvalues, alg = QuickSort)
+    perm = sortperm(pvalues, alg=QuickSort)
     pvalues = pvalues[perm]
     Rvalues = Rvalues[perm]
     Mvalues = Mvalues[perm]
@@ -75,13 +79,13 @@ function solve_mrdiagram(pa::Real, pb::Real, eos::Function;
         df.p0 = pvalues
         df.radius = Rvalues
         df.mass = Mvalues
-        CSV.write("mrdiagram.csv", df)
+        CSV.write(csvname, df)
     end
 
-    p = plot(Rvalues, Mvalues, legend = false, show = false)
-    xlabel!(p, raw"Radius (km)")
-    ylabel!(p, raw"Mass (M$_\odot$)")
-    savefig("mrdiagram.png")
+    if plot
+        p = plot(Rvalues, Mvalues, legend=false, show=false, xaxis=raw"R (km)", yaxis=raw"M (M$_\odot$)")
+            savefig(p, plotname)
+    end
 
     return Curve(pvalues, Rvalues, Mvalues)
 end

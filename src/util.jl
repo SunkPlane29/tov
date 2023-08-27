@@ -19,17 +19,17 @@ using CSV
 #TODO: there should be somewhere denoting the units
 #write_data writes the curve data to a datafile, note that this function is not really general, so this will only work
 #in the context of TOV
-function write_data(curve::Curve)
+function write_data(curve::Curve, name::String)
     df = DataFrame()
     df.radius = curve.tvalues
     df.pressure = curve.xvalues
     df.mass = curve.yvalues
-    CSV.write("single_star_data.csv", df)
+    CSV.write(name, df)
 end
 
 #plot_from_datafile plots the TOV (single star curve) from a csv datafile
-function plot_from_datafile()
-    df = CSV.File("tov_data.csv") |> DataFrame
+function plot_from_datafile(name::String)
+    df = CSV.File(name) |> DataFrame
     curve = Curve(df.radius, df.pressure, df.mass)
     plot_curves(curve)
 end
