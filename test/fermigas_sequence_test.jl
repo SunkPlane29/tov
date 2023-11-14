@@ -1,65 +1,60 @@
-#MANUAL TEST
+#MANUAL TEST, JUST CHECK THE RESULTS
+#
+#MAXIMUM MASS OF THE FIRST EOS SHOULD BE AROUND 1.97 SOLARMASS
+#MAXIMUM MASS OF THE SECOND EOS SHOULD BE AROUND 2.02 SOLARMASS
 
-include("../src/TOV.jl")
-using .TOV
+using TOV
 using Test
 
 using Plots
 using Printf
 
-# BASEPATH = dirname(dirname(pathof(TOV)))
-BASEPATH = ".."
-# eosfile = joinpath(BASEPATH, "test", "eos", "fermigas.csv")
-# eosfile = joinpath(BASEPATH, "test", "eos", "fermigaslarge.csv")
-eosfile = joinpath(BASEPATH, "test", "eos", "quarkmatter.csv")
-# eosfile = joinpath(BASEPATH, "test", "eos", "cmf.csv")
-# eosheader = ["p", "ϵ"]
-eosheader = ["ρb", "p", "ϵ"]
-# eosheader = ["T", "n_b", "Y_q", "p", "ϵ"]
-eos = TOV.eos_from_file(eosfile, eosheader)
+using CSV
+using DataFrames
 
-#NOTE: using the same p₀ (without interpolation) leads probably to
-#lesser errors
-p₀ = eos.pressure
-# p₀ = collect(range(eos.pressure[1], last(eos.pressure), length=300))
+BASEPATH = dirname(dirname(pathof(TOV)))
+run(`mkdir out -p`)
+out1 = joinpath(BASEPATH, "out", "p0MR1.csv")
+out2 = joinpath(BASEPATH, "out", "p0MR2.csv")
+out3 = joinpath(BASEPATH, "out", "MR1.png")
+out4 = joinpath(BASEPATH, "out", "MR2.png")
+run(`touch $out1 $out2 $out3 $out4`)
 
-singlesol = TOV.solve_tov(200*TOV.MEVFM3_TO_PRESSURE_UNIT, eos, eps=1e-8)
-plot(singlesol.r, singlesol.p,
-     title=@sprintf("R: %.4f, M: %.4f, p₀: %.4e", last(singlesol.r),
-                    last(singlesol.M), last(singlesol.p₀)))
-savefig("rp.png")
-plot(singlesol.r, singlesol.M)
-savefig("rM.png")
+eosfile1 = joinpath(BASEPATH, "test", "eos", "quarkmatter.csv")
+eosfile2 = joinpath(BASEPATH, "test", "eos", "cmf.csv")
+eosheader1 = ["ρb", "p", "ϵ"]
+eosheader2 = ["T", "n_b", "Y_q", "p", "ϵ"]
 
-#1e-8 para fermigas (1e-7 for large)
-#1e-4 para quarkmatter or 5.82210288e-5 (maximum precision?)
-#1e-7 para cmf
-# sol = TOV.solve_sequence(p₀, eos, eps=1e-8)
-# sol = TOV.solve_sequence(p₀, eos, eps=1e-7)
-sol = TOV.solve_sequence(p₀, eos, eps=1e-4)
-# sol = TOV.solve_sequence(p₀, eos, eps=1e-7)
+@time begin
+    eos1 = TOV.eos_from_file(eosfile1, eosheader1)
+    p01 = collect(range(1, 600, length=300)) .* TOV.MEVFM3_TO_PRESSURE_UNIT
 
-println(maximum(sol.R))
-println(maximum(sol.M))
+    sol = TOV.solve_sequence(p01, eos1, stepsize=1*TOV.SI_TO_LENGTH_UNIT)
 
-#NOTE: the error is most likelly in the solving of the TOV equations,
-#specifically where I use a convergence cut-off
-#NOTE: when settings eps for the cutoff, when eps ~ 1e-5 the mass starts
-#to have artifacts just like the radius. Also, for more accurate maximum
-#NOTE: I was able to set a minumum to the adaptive stepsize of the RK
-#algorithm but the numeric errors are still there, why?
-#masses, we need more precise eps (of order ~ 1e-8)
-#NOTE: Minimum stepsize helped in the case of quarkmatter eos but made it
-#worse in the case of cmf eos and also in the case of fermigas eos
-#NOTE: stepsize in quarkmatter eos might just be off, because the equation
-#is so stiff, it might be overdoing the step
-#TODO: the error might be in interpolation?
+    CSV.write(joinpath(BASEPATH, "out", "p0MR1.csv"), DataFrame(p0=sol.p₀, M=sol.M, R=sol.R))
 
-plot(sol.p₀, sol.R, xlim=(-10, 1000), ylim=(0, 20), seriestype=:scatter,
-     show=true, size=(1200, 900))
-savefig("p0R.png")
-plot(sol.p₀, sol.M, seriestype=:scatter, xlim=(-10, 1000), show=false,
-     size=(1200, 900))
-savefig("p0M.png")
-plot(sol.R, sol.M, seriestype=:path, size=(1200, 900))
-savefig("MR.png")
+    plot(sol.R, sol.M, seriestype=:path,
+         title=@sprintf("Maximum mass: %.4f", maximum(sol.M)), label=false,
+         yaxis=raw"$M$ (M$_{\odot}$)", xaxis=raw"$R$ (km)")
+
+    savefig(joinpath(BASEPATH, "out", "MR1.png"))
+
+    @test 1.9722 ≈ maximum(sol.M) atol=1e-2
+end
+
+@time begin
+    eos2 = TOV.eos_from_file(eosfile2, eosheader2)
+    p02 = [collect(range(1, 6, length=50)); collect(range(6, 600, length=250))] .* TOV.MEVFM3_TO_PRESSURE_UNIT
+
+    sol = TOV.solve_sequence(p02, eos2, stepsize=1*TOV.SI_TO_LENGTH_UNIT)
+
+    CSV.write(joinpath(BASEPATH, "out", "p0MR2.csv"), DataFrame(p0=sol.p₀, M=sol.M, R=sol.R))
+
+    plot(sol.R, sol.M, seriestype=:path,
+         title=@sprintf("Maximum mass: %.4f", maximum(sol.M)), label=false,
+         yaxis=raw"$M$ (M$_{\odot}$)", xaxis=raw"$R$ (km)")
+
+    savefig(joinpath(BASEPATH, "out", "MR2.png"))
+
+    @test 2.0203 ≈ maximum(sol.M) atol=1e-2
+end
