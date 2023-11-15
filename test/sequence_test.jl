@@ -31,13 +31,13 @@ eosheader2 = ["T", "n_b", "Y_q", "p", "ϵ"]
 
     sol = TOV.solve_sequence(p01, eos1, stepsize=1*TOV.SI_TO_LENGTH_UNIT)
 
-    CSV.write(joinpath(BASEPATH, "out", "p0MR1.csv"), DataFrame(p0=sol.p₀, M=sol.M, R=sol.R))
+    CSV.write(joinpath(BASEPATH, "out", "seqtest_p0MR1.csv"), DataFrame(p0=sol.p₀, M=sol.M, R=sol.R))
 
     plot(sol.R, sol.M, seriestype=:path,
          title=@sprintf("Maximum mass: %.4f", maximum(sol.M)), label=false,
          yaxis=raw"$M$ (M$_{\odot}$)", xaxis=raw"$R$ (km)")
 
-    savefig(joinpath(BASEPATH, "out", "MR1.png"))
+    savefig(joinpath(BASEPATH, "out", "seqtest_MR1.png"))
 
     @test 1.9722 ≈ maximum(sol.M) atol=1e-2
 end
@@ -48,13 +48,13 @@ end
 
     sol = TOV.solve_sequence(p02, eos2, stepsize=1*TOV.SI_TO_LENGTH_UNIT)
 
-    CSV.write(joinpath(BASEPATH, "out", "p0MR2.csv"), DataFrame(p0=sol.p₀, M=sol.M, R=sol.R))
+    CSV.write(joinpath(BASEPATH, "out", "seqtest_p0MR2.csv"), DataFrame(p0=sol.p₀, M=sol.M, R=sol.R))
 
     plot(sol.R, sol.M, seriestype=:path,
          title=@sprintf("Maximum mass: %.4f", maximum(sol.M)), label=false,
          yaxis=raw"$M$ (M$_{\odot}$)", xaxis=raw"$R$ (km)")
 
-    savefig(joinpath(BASEPATH, "out", "MR2.png"))
+    savefig(joinpath(BASEPATH, "out", "seqtest_MR2.png"))
 
     @test 2.0203 ≈ maximum(sol.M) atol=1e-2
 end
