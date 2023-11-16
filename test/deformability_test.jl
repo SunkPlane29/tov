@@ -9,24 +9,31 @@ using Printf
 
 BASEPATH = ".."
 outpath = joinpath(BASEPATH, "out")
-eosfile = joinpath(BASEPATH, "test", "eos", "quarkmatter.csv")
-eosheader = ["ρb", "p", "ϵ"]
-eos = TOV.eos_from_file(eosfile, eosheader)
+eosfile1 = joinpath(BASEPATH, "test", "eos", "quarkmatter.csv")
+eosfile2 = joinpath(BASEPATH, "test", "eos", "cmf.csv")
+eosheader1 = ["ρb", "p", "ϵ"]
+eosheader2 = ["T", "n_b", "Y_q", "p", "ϵ"]
+eos1 = TOV.eos_from_file(eosfile1, eosheader1)
+eos2 = TOV.eos_from_file(eosfile2, eosheader2)
 
 p₀ = 200
 
-solution = TOV.solve_tov(p₀*TOV.MEVFM3_TO_PRESSURE_UNIT, eos, ϵsup=eos.eos_function(0.0))
+eos = eos2
 
-plot(solution.r, solution.phi, xaxis=raw"$r$ (km)", yaxis=raw"$\phi$ (?)", label=false,
+sol = TOV.solve_tov(p₀*TOV.MEVFM3_TO_PRESSURE_UNIT, eos, ϵsup=eos.eos_function(0.0))
+
+plot(sol.r, sol.phi, xaxis=raw"$r$ (km)", yaxis=raw"$\phi$ (?)", label=false,
      title=@sprintf("p0 = %.2f MeV/fm^3", p₀))
 savefig(joinpath(outpath, "deftest_rphi.png"))
 
-plot(solution.r, solution.H, xaxis=raw"$r$ (km)", yaxis=raw"$H$ (?)", label=false,
-     title=@sprintf("p0 = %.2f MeV/fm^3", p₀))
+plot(sol.r, sol.H, xaxis=raw"$r$ (km)", yaxis=raw"$H$ (?)", label=false,
+     title=@sprintf("p0 = %.2f MeV/fm^3", p₀), ylim=(-0.7, 1.1))
+plot!(sol.r, sol.r .^ 2, label="Initial condition", linestyle=:dash)
 savefig(joinpath(outpath, "deftest_rH.png"))
 
-plot(solution.r, solution.beta, xaxis=raw"$r$ (km)", yaxis=raw"$\beta$ (?)", label=false,
-     title=@sprintf("p0 = %.2f MeV/fm^3", p₀))
+plot(sol.r, sol.beta, xaxis=raw"$r$ (km)", yaxis=raw"$\beta$ (?)", label=false,
+     title=@sprintf("p0 = %.2f MeV/fm^3", p₀), ylim=(-1.55, 1.55))
+plot!(sol.r, 2 .* sol.r, label="Initial condition", linestyle=:dash)
 savefig(joinpath(outpath, "deftest_rbeta.png"))
 
 #TODO: figure out the units of these things I added
@@ -34,10 +41,14 @@ savefig(joinpath(outpath, "deftest_rbeta.png"))
 #behavior in these two quantitities in function of mass
 
 @printf("\nϵ_sup: %.4e MeV/fm^3\n", eos.eos_function(0.0)*TOV.PRESSURE_UNIT_TO_MEVFM3)
-@printf("\nk2: %.4e \nLambda: %.4e\n", solution.k2, solution.Lambda)
+@printf("\nk2: %.4e \nLambda: %.4e\n", sol.k2, sol.Lambda)
 
-p₀ = collect(range(1, 600, length=300)) .* TOV.MEVFM3_TO_PRESSURE_UNIT
+# p₀ = collect(range(1, 600, length=300)) .* TOV.MEVFM3_TO_PRESSURE_UNIT
+p₀ = [collect(range(1, 6, length=50)); collect(range(6, 600, length=250))] .* TOV.MEVFM3_TO_PRESSURE_UNIT
 sol = TOV.solve_sequence(p₀, eos, ϵsup=eos.eos_function(0.0), stepsize=1*TOV.SI_TO_LENGTH_UNIT)
+
+plot(sol.R, sol.M, xaxis=raw"$r$ (km)", yaxis=raw"$M$ (M$_{\odot}$)", label=false)
+savefig(joinpath(outpath, "deftest_MR.png"))
 
 plot(sol.M, sol.Lambda, xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$\Lambda$", label=false)
 savefig(joinpath(outpath, "deftest_MLambda.png"))
