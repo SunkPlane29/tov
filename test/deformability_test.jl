@@ -11,14 +11,17 @@ BASEPATH = ".."
 outpath = joinpath(BASEPATH, "out")
 eosfile1 = joinpath(BASEPATH, "test", "eos", "quarkmatter.csv")
 eosfile2 = joinpath(BASEPATH, "test", "eos", "cmf.csv")
+eosfile3 = joinpath(BASEPATH, "test", "eos", "su2njl_eos.csv")
 eosheader1 = ["ρb", "p", "ϵ"]
 eosheader2 = ["T", "n_b", "Y_q", "p", "ϵ"]
+eosheader3 = ["ϵ", "p", "n_b", "μ_b"]
 eos1 = TOV.eos_from_file(eosfile1, eosheader1)
 eos2 = TOV.eos_from_file(eosfile2, eosheader2)
+eos3 = TOV.eos_from_file(eosfile3, eosheader3)
 
 p₀ = 200
 
-eos = eos2
+eos = eos3
 
 sol = TOV.solve_tov(p₀*TOV.MEVFM3_TO_PRESSURE_UNIT, eos, ϵsup=eos.eos_function(0.0))
 
