@@ -23,7 +23,9 @@ struct EOS
     pressure::AbstractVector{Real}
     energy_density::AbstractVector{Real}
     eos_interp::Interpolations.Extrapolation
+    eos_interp_rev::Interpolations.Extrapolation
     eos_function::Function
+    eos_function_rev::Function
 end
 
 #NOTE: from this it is clear that the eos file should not already have a header, and, that
@@ -44,12 +46,18 @@ function eos_from_file(file::AbstractString, header::AbstractVector{String} ; is
     pressure = eos.p .* MEVFM3_TO_PRESSURE_UNIT
     energy_density = eos.ϵ .* MEVFM3_TO_PRESSURE_UNIT
 
+    #TODO: talk with other people and see if linear interpolation is good here
     eos_interp = linear_interpolation(pressure, energy_density, extrapolation_bc=Line())
     eos_function(p) = begin
         eos_interp(p)
     end
 
-    return EOS(pressure, energy_density, eos_interp, eos_function)
+    eos_interp_rev = linear_interpolation(energy_density, pressure, extrapolation_bc=Line())
+    eos_function_rev(p) = begin
+        eos_interp_rev(p)
+    end
+
+    return EOS(pressure, energy_density, eos_interp, eos_interp_rev, eos_function, eos_function_rev)
 end
 
 #functions to convert .dat files (commonly from fortran programs) into .csv files, which

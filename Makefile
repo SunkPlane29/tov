@@ -7,10 +7,12 @@
 .PHONY: init-files
 init-files:
 	mkdir out -p
-	touch out/p0MR1.csv
-	touch out/p0MR2.csv
-	touch out/MR1.csv
-	touch out/MR2.csv
+	touch out/seqtest_p0MR1.csv
+	touch out/seqtest_p0MR2.csv
+	touch out/seqtest_MR1.csv
+	touch out/seqtest_MR2.csv
+	touch out/deftest_rphi.png
+	touch out/deftest_rH.png
 
 .PHONY: enter-repl
 enter-repl:
