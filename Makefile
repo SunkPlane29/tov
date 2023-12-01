@@ -11,8 +11,7 @@ init-files:
 	touch out/seqtest_p0MR2.csv
 	touch out/seqtest_MR1.csv
 	touch out/seqtest_MR2.csv
-	touch out/deftest_rphi.png
-	touch out/deftest_rH.png
+	touch out/deftest_MR.csv
 
 .PHONY: enter-repl
 enter-repl:

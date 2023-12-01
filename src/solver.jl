@@ -60,7 +60,7 @@ function beta_eq(r::Real, p::Real, m::Real, phi::Real, H::Real, beta::Real, eos:
     f(p) = FiniteDiff.finite_difference_derivative(eos_rev, p)
     dbetadr = 2*(1 - 2m/r)^(-1)*H*(-2π*(5eos(p) + 9p + f(eos(p) + p)) + 3/r^2 +
         2*(1 - 2m/r)^(-1)*(m/r^2 + 4π*r*p)^2) +
-        (2beta/r)*(1 - 2m/r)^(-1)*(-1 + m/r + 2π*r^2*(eos(p) + p))
+        (2beta/r)*(1 - 2m/r)^(-1)*(-1 + m/r + 2π*r^2*(eos(p) - p))
     return dbetadr
 end
 
@@ -171,6 +171,9 @@ struct SequenceSolution
     M::AbstractVector
     k2::AbstractVector
     Lambda::AbstractVector
+    Phi::AbstractVector
+    H::AbstractVector
+    Beta::AbstractVector
 end
 
 function solve_sequence(p₀::AbstractVector, eos::Function, eos_rev::Function ;
@@ -203,12 +206,16 @@ function solve_sequence(p₀::AbstractVector, eos::Function, eos_rev::Function ;
     M = []
     k_2 = []
     Λ = []
+    Phi = []
+    H = []
+    Beta = []
 
     for soli in sol
         Ri = last(soli.t)
         Mi = last(soli.u)[2]
         Hi = last(soli.u)[4]
         betai = last(soli.u)[5]
+        phii = last(soli.u)[3]
 
         k_2i = k2(Ri, Mi, Hi, betai, ϵsup)
         Λi = Lambda(Ri, Mi, k_2i)
@@ -217,9 +224,12 @@ function solve_sequence(p₀::AbstractVector, eos::Function, eos_rev::Function ;
         append!(M, Mi)
         append!(k_2, k_2i)
         append!(Λ, Λi)
+        append!(Phi, phii)
+        append!(H, Hi)
+        append!(Beta, betai)
     end
 
-    return SequenceSolution(p₀ .* PRESSURE_UNIT_TO_MEVFM3, R, M, k_2, Λ)
+    return SequenceSolution(p₀ .* PRESSURE_UNIT_TO_MEVFM3, R, M, k_2, Λ, Phi, H, Beta)
 end
 
 function solve_sequence(p₀::AbstractVector, eos::EOS ;
