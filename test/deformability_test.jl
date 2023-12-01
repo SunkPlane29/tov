@@ -6,6 +6,8 @@ using TOV
 using Test
 using Plots
 using Printf
+using DataFrames
+using CSV
 
 BASEPATH = ".."
 outpath = joinpath(BASEPATH, "out")
@@ -58,3 +60,6 @@ savefig(joinpath(outpath, "deftest_MLambda.png"))
 
 plot(sol.M, sol.k2, xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$k_2$", label=false)
 savefig(joinpath(outpath, "deftest_Mk2.png"))
+
+mr = DataFrame(p0=sol.p₀, R=sol.R, M=sol.M, k2=sol.k2, Lambda=sol.Lambda)
+CSV.write(joinpath(outpath, "deftest_MR.csv"), mr)
