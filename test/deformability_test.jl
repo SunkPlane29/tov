@@ -32,12 +32,12 @@ plot(sol.r, sol.phi, xaxis=raw"$r$ (km)", yaxis=raw"$\phi$ (?)", label=false,
 savefig(joinpath(outpath, "deftest_rphi.png"))
 
 plot(sol.r, sol.H, xaxis=raw"$r$ (km)", yaxis=raw"$H$ (?)", label=false,
-     title=@sprintf("p0 = %.2f MeV/fm^3", p₀), ylim=(-0.7, 1.1))
+     title=@sprintf("p0 = %.2f MeV/fm^3", p₀))
 plot!(sol.r, sol.r .^ 2, label="Initial condition", linestyle=:dash)
 savefig(joinpath(outpath, "deftest_rH.png"))
 
 plot(sol.r, sol.beta, xaxis=raw"$r$ (km)", yaxis=raw"$\beta$ (?)", label=false,
-     title=@sprintf("p0 = %.2f MeV/fm^3", p₀), ylim=(-1.55, 1.55))
+     title=@sprintf("p0 = %.2f MeV/fm^3", p₀))
 plot!(sol.r, 2 .* sol.r, label="Initial condition", linestyle=:dash)
 savefig(joinpath(outpath, "deftest_rbeta.png"))
 
@@ -52,7 +52,7 @@ savefig(joinpath(outpath, "deftest_rbeta.png"))
 p₀ = [collect(range(1, 6, length=50)); collect(range(6, 600, length=250))] .* TOV.MEVFM3_TO_PRESSURE_UNIT
 sol = TOV.solve_sequence(p₀, eos, ϵsup=eos.eos_function(0.0), stepsize=1*TOV.SI_TO_LENGTH_UNIT)
 
-plot(sol.R, sol.M, xaxis=raw"$r$ (km)", yaxis=raw"$M$ (M$_{\odot}$)", label=false)
+plot(sol.R, sol.M, xaxis=raw"$R$ (km)", yaxis=raw"$M$ (M$_{\odot}$)", label=false)
 savefig(joinpath(outpath, "deftest_MR.png"))
 
 plot(sol.M, sol.Lambda, xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$\Lambda$", label=false)
@@ -61,5 +61,18 @@ savefig(joinpath(outpath, "deftest_MLambda.png"))
 plot(sol.M, sol.k2, xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$k_2$", label=false)
 savefig(joinpath(outpath, "deftest_Mk2.png"))
 
-mr = DataFrame(p0=sol.p₀, R=sol.R, M=sol.M, k2=sol.k2, Lambda=sol.Lambda)
+plot(sol.R, sol.H, xaxis=raw"$R$ (km)", yaxis=raw"$H$ (?)", label=false)
+savefig(joinpath(outpath, "deftest_RH.png"))
+
+plot(sol.R, sol.Beta, xaxis=raw"$R$ (km)", yaxis=raw"$\Beta$ (?)", label=false)
+savefig(joinpath(outpath, "deftest_RBeta.png"))
+
+plot(sol.M, sol.H, xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$H$ (?)", label=false)
+savefig(joinpath(outpath, "deftest_MH.png"))
+
+plot(sol.M, sol.Beta, xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$\Beta$ (?)", label=false)
+savefig(joinpath(outpath, "deftest_MBeta.png"))
+
+mr = DataFrame(p0=sol.p₀, R=sol.R, M=sol.M, k2=sol.k2, Lambda=sol.Lambda, Phi=sol.Phi,
+               H=sol.H, Beta=sol.Beta)
 CSV.write(joinpath(outpath, "deftest_MR.csv"), mr)
