@@ -25,7 +25,9 @@ p₀ = 200
 
 eos = eos1
 
-sol = TOV.solve_tov(p₀*TOV.MEVFM3_TO_PRESSURE_UNIT, eos, ϵsup=eos.eos_function(0.0))
+ϵsup = eos.eos_function(0.0)
+
+sol = TOV.solve_tov(p₀*TOV.MEVFM3_TO_PRESSURE_UNIT, eos, ϵsup=ϵsup)
 
 plot(sol.r, sol.phi, xaxis=raw"$r$ (km)", yaxis=raw"$\phi$ (?)", label=false,
      title=@sprintf("p0 = %.2f MeV/fm^3", p₀))
@@ -49,7 +51,7 @@ savefig(joinpath(outpath, "deftest_rbeta.png"))
 
 # p₀ = collect(range(1, 600, length=300)) .* TOV.MEVFM3_TO_PRESSURE_UNIT
 p₀ = [collect(range(1, 6, length=50)); collect(range(6, 2000, length=300))] .* TOV.MEVFM3_TO_PRESSURE_UNIT
-sol = TOV.solve_sequence(p₀, eos, ϵsup=eos.eos_function(0.0), stepsize=1*TOV.SI_TO_LENGTH_UNIT)
+sol = TOV.solve_sequence(p₀, eos, ϵsup=ϵsup, stepsize=1*TOV.SI_TO_LENGTH_UNIT)
 
 plot(sol.R, sol.M, xaxis=raw"$R$ (km)", yaxis=raw"$M$ (M$_{\odot}$)", label=false)
 savefig(joinpath(outpath, "deftest_MR.png"))
