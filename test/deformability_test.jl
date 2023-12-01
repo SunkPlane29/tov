@@ -23,7 +23,7 @@ eos3 = TOV.eos_from_file(eosfile3, eosheader3)
 
 p₀ = 200
 
-eos = eos3
+eos = eos1
 
 sol = TOV.solve_tov(p₀*TOV.MEVFM3_TO_PRESSURE_UNIT, eos, ϵsup=eos.eos_function(0.0))
 
@@ -41,7 +41,6 @@ plot(sol.r, sol.beta, xaxis=raw"$r$ (km)", yaxis=raw"$\beta$ (?)", label=false,
 plot!(sol.r, 2 .* sol.r, label="Initial condition", linestyle=:dash)
 savefig(joinpath(outpath, "deftest_rbeta.png"))
 
-#TODO: figure out the units of these things I added
 #TODO: also fix the problem with negative k2 and Lambda and also non-monotonic
 #behavior in these two quantitities in function of mass
 
@@ -49,13 +48,13 @@ savefig(joinpath(outpath, "deftest_rbeta.png"))
 @printf("\nk2: %.4e \nLambda: %.4e\n", sol.k2, sol.Lambda)
 
 # p₀ = collect(range(1, 600, length=300)) .* TOV.MEVFM3_TO_PRESSURE_UNIT
-p₀ = [collect(range(1, 6, length=50)); collect(range(6, 600, length=250))] .* TOV.MEVFM3_TO_PRESSURE_UNIT
+p₀ = [collect(range(1, 6, length=50)); collect(range(6, 2000, length=300))] .* TOV.MEVFM3_TO_PRESSURE_UNIT
 sol = TOV.solve_sequence(p₀, eos, ϵsup=eos.eos_function(0.0), stepsize=1*TOV.SI_TO_LENGTH_UNIT)
 
 plot(sol.R, sol.M, xaxis=raw"$R$ (km)", yaxis=raw"$M$ (M$_{\odot}$)", label=false)
 savefig(joinpath(outpath, "deftest_MR.png"))
 
-plot(sol.M, sol.Lambda, xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$\Lambda$", label=false)
+plot(sol.M, log10.(sol.Lambda), xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$\log \Lambda$", label=false)
 savefig(joinpath(outpath, "deftest_MLambda.png"))
 
 plot(sol.M, sol.k2, xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$k_2$", label=false)
