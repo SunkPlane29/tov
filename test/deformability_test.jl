@@ -56,7 +56,8 @@ sol = TOV.solve_sequence(p₀, eos, ϵsup=ϵsup, stepsize=1*TOV.SI_TO_LENGTH_UNI
 plot(sol.R, sol.M, xaxis=raw"$R$ (km)", yaxis=raw"$M$ (M$_{\odot}$)", label=false)
 savefig(joinpath(outpath, "deftest_MR.png"))
 
-plot(sol.M, log10.(sol.Lambda), xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$\log \Lambda$", label=false)
+plot(sol.M, sol.Lambda, xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$\log \Lambda$", label=false, 
+yscale=:log10, yticks = [1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10])
 savefig(joinpath(outpath, "deftest_MLambda.png"))
 
 plot(sol.M, sol.k2, xaxis=raw"$M$ (M$_{\odot}$)", yaxis=raw"$k_2$", label=false)

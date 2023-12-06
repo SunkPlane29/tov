@@ -57,8 +57,8 @@ end
 
 #NOTE: might have an error in order of calculation
 function beta_eq(r::Real, p::Real, m::Real, phi::Real, H::Real, beta::Real, eos::Function, eos_rev::Function)::Real
-    f(p) = FiniteDiff.finite_difference_derivative(eos_rev, p)
-    dbetadr = 2*(1 - 2m/r)^(-1)*H*(-2π*(5eos(p) + 9p + f(eos(p) + p)) + 3/r^2 +
+    f(p) = FiniteDiff.finite_difference_derivative(eos, p)
+    dbetadr = 2*(1 - 2m/r)^(-1)*H*(-2π*(5eos(p) + 9p + f(p)*(eos(p) + p)) + 3/r^2 +
         2*(1 - 2m/r)^(-1)*(m/r^2 + 4π*r*p)^2) +
         (2beta/r)*(1 - 2m/r)^(-1)*(-1 + m/r + 2π*r^2*(eos(p) - p))
     return dbetadr
