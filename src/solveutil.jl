@@ -1,10 +1,4 @@
-#NOTE: these utility functions write the results into datafiles and plot images, a library code shouldn't
-#do these sort of things (also use multithreaded), but..., I think this solution is suitable here since
-#this wasn't made to be run on servers or in critical applications
-#
-#more generic function that calls solve_tov and catches errors that might appear, will also write the curve
-#data to a .csv file unless specified not to
-#user must give an initial pressure and an equation of state (function of pressure) for the star
+#TODO: most of these functions are dumb in a way that they should be client code
 function solve(p₀::Real, eos::Function;
                write::Bool=true, stepsize::Real=1*SI_TO_LENGTH_UNIT, n::Integer=100_000)::Curve
     curve = solve_tov(p₀, eos, stepsize, n=n)

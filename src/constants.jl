@@ -1,6 +1,4 @@
-#Taken from CODATA (NIST) (I think except for the mass of the sun)
-#TODO: I don't know how to work with precision and errors regarding measurement of
-#physical constants, might be good learning about them
+#Taken from CODATA (NIST) (I think except for the mass of the sun, which was taken from wikipedia)
 
 global const c = G = MSOLAR = 1
 

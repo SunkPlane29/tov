@@ -1,20 +1,12 @@
 #I will define some units in which c = G = M⊙ = 1, i will also define convertion factors for
 #the basics units in SI: m, kg, s
 #
-#1(unit of mass)    = 1.989*10^30kg
-#1(unit of length)  = 1.477*10^3m (also one half of the swartzchild radius of the sun)
-#1(unit of time)    = 4.927*10^-6s
+#1(unit of mass)    ≈ 1.989*10^30kg
+#1(unit of length)  ≈ 1.477*10^3m
+#1(unit of time)    ≈ 4.927*10^(-6)s
 
-#solve_tov is a function that computes the solution of the Tollman-Oppenheimer-Volkoff (TOV) equations
-#given a central pressure of the star and it's equation of state (EoS). stepsize and n (number of points)
-#should also be passed as parameters since each star will have varying radiuses and masses
-#the function returns a struct named curve that holds 3 vectors, one containing the array of radiuses, one
-#containing the array of pressures and one containing the array of masses. The radius array should be in units
-#of m or km (for now it's km), the pressure array can be in any units (but one could use units that help
-#with comparison with other sources) and the mass array should always be in units of solar mass
+#TODO: refactor and add love number and potential
 function solve_tov(p₀::Real, eos::Function, stepsize::Real ; n::Integer=100_000)::Curve
-    #NOTE: in case I get myself trying to improve the code precision, these initial values might be a
-    #way to start
     r_init = 1e-8
     m_init = 1e-24
     p_init = p₀

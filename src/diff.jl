@@ -1,3 +1,5 @@
+#TODO: refactor
+
 #Curve holds the solution data of two couppled differential equations, x and y,  that depend on a single
 #variable t
 mutable struct Curve
