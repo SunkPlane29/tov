@@ -6,8 +6,6 @@ global const si_c::Real         = 2.99792458e8      # m s⁻¹
 global const si_G::Real         = 6.67430e-11       # m³ kg⁻¹ s⁻²
 global const si_MSOLAR::Real    = 1.98855e30        # kg
 global const si_ħ::Real         = 6.582119569e-16   # eV s
-global const si_mₙ::Real        = 1.67492749804e-27 # kg
-global const si_mₑ::Real        = 9.1093837015e-31  # kg
 
 global const MASS_UNIT_TO_SI::Real       = si_MSOLAR                # kg
 global const LENGTH_UNIT_TO_SI::Real     = si_G*si_MSOLAR/si_c^2    # m
@@ -53,3 +51,8 @@ global const JOULE_TO_MEV4::Real = MEV4_TO_JOULE^(-1)                           
 #will also most likelly have units of MeVfm⁻³, I made this utility constant to quickly convert to and from these units
 global const MEVFM3_TO_PRESSURE_UNIT::Real = MEVFM3_TO_MEV4 * MEV4_TO_JOULE * SI_TO_PRESSURE_UNIT
 global const PRESSURE_UNIT_TO_MEVFM3::Real = MEVFM3_TO_PRESSURE_UNIT^(-1)
+
+# convenience conversion factors that automatically convert from SI units to these natural system
+global const m = SI_TO_LENGTH_UNIT
+global const kg = SI_TO_MASS_UNIT
+global const s = SI_TO_TIME_UNIT
