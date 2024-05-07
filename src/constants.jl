@@ -19,9 +19,6 @@ global const PRESSURE_UNIT_TO_SI::Real = MASS_UNIT_TO_SI*LENGTH_UNIT_TO_SI^(-1)*
 global const SI_TO_PRESSURE_UNIT::Real = PRESSURE_UNIT_TO_SI^(-1)                                    # dimensionless
 
 global const ħ::Real  = si_ħ*SI_TO_MASS_UNIT*SI_TO_LENGTH_UNIT^2*SI_TO_TIME_UNIT^(-1) # dimensionless
-global const mₙ::Real = si_mₙ*SI_TO_MASS_UNIT                                         # dimensionless
-global const mₑ::Real = si_mₑ*SI_TO_MASS_UNIT                                         # dimensionless
-
 #basic relation in natural units
 global const ħc::Real = (si_c*10^(15))*(si_ħ*10^(-6)) # MeV fm
 
