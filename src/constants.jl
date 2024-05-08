@@ -53,3 +53,4 @@ global const PRESSURE_UNIT_TO_MEVFM3::Real = MEVFM3_TO_PRESSURE_UNIT^(-1)
 global const m = SI_TO_LENGTH_UNIT
 global const kg = SI_TO_MASS_UNIT
 global const s = SI_TO_TIME_UNIT
+global const MeVfm3 = MEVFM3_TO_PRESSURE_UNIT
