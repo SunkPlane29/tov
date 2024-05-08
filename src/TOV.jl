@@ -12,7 +12,7 @@ include("diff.jl")
 export nextpoint, solvesystem
 
 include("util.jl")
-export CubicSpline, CubicSplineInterpolation
+export CubicSpline, CubicSplineInterpolation, EoS
 
 #dependent files
 include("solver.jl")

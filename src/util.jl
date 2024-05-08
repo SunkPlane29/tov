@@ -1,8 +1,6 @@
-#TODO: implement cubic spline
-#TODO: implement derivative (of cubic spline if necessary)
-
 using LinearAlgebra
 
+#TODO: implement derivative
 struct CubicSpline
     x::Vector{Float64}
     y::Vector{Float64}
@@ -52,4 +50,22 @@ function (cs::CubicSpline)(x::Real)::Real
     t = (x - cs.x[i])/(cs.x[i+1] - cs.x[i])
 
     (1 - t)*cs.y[i] + t*cs.y[i+1] + t*(1 - t)*(cs.c[i]*(1 - t) + cs.d[i]*t) 
+end
+
+struct EoS
+    P::Vector{Float64}
+    ϵ::Vector{Float64}
+    cs::CubicSpline
+end
+
+using CSV, DataFrames
+
+#TODO: implement support for datafiles (not CSV) and other unit systems (not MeVfm3)
+function EoS(file::AbstractString, header=["P", "ϵ"])::EoS
+    df = CSV.File(file, header=header) |> DataFrame
+    EoS(df.P, df.ϵ, CubicSplineInterpolation((df.P).*MeVfm3, (df.ϵ).*MeVfm3))
+end
+
+function (eos::EoS)(P::Real)::Real
+    eos.cs(P)
 end

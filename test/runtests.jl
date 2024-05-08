@@ -1,5 +1,5 @@
 using Test
-using CSV, DataFrames, DataInterpolations, Plots, Printf
+using DataFrames, CSV, Plots, Printf
 using Revise
 using TOV
 
@@ -7,14 +7,13 @@ using TOV
 
 transform(col, val) = val
 transform(col, val::Float64) = @sprintf("%.16e", val)
-eosfile = joinpath(dirname(@__FILE__), "eos", "eos.csv")
-df = CSV.File(eosfile, header=["ρb", "P", "ϵ"]) |> DataFrame
-dfinterp = LinearInterpolation((df.ϵ).*MeVfm3, (df.P).*MeVfm3, extrapolate=true)
-ϵ(P) = dfinterp(P)
+
+eos = EoS(joinpath(dirname(@__FILE__), "eos", "eos.csv"), ["ρb", "P", "ϵ"])
+ϵ(P) = eos(P)
 
 @testset "TOV" begin
     include("test_cublicspline.jl")
-    # include("test_diffsolve.jl")
-    # include("test_mrdiagram.jl")
-    # include("test_lovenumber.jl")
+    include("test_diffsolve.jl")
+    include("test_mrdiagram.jl")
+    include("test_lovenumber.jl")
 end
