@@ -1,6 +1,6 @@
 @testset "MR Diagram" begin
 
-P0 = [collect(range(1MeVfm3, 10MeVfm3, length=20)); collect(range(10MeVfm3, 600MeVfm3, length=80))]
+P0 = range(1MeVfm3, 600MeVfm3, length=200)
 
 mrdiagram = solvemrdiagram(P0, ϵ)
 plot(mrdiagram[:, 3], mrdiagram[:, 2], label="TOV", ylabel="M [M⊙]", xlabel="R [km]", legend=:topleft)
