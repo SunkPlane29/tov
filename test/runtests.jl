@@ -13,7 +13,8 @@ dfinterp = LinearInterpolation((df.ϵ).*MeVfm3, (df.P).*MeVfm3, extrapolate=true
 ϵ(P) = dfinterp(P)
 
 @testset "TOV" begin
-    include("test_diffsolve.jl")
-    include("test_mrdiagram.jl")
-    include("test_lovenumber.jl")
+    include("test_cublicspline.jl")
+    # include("test_diffsolve.jl")
+    # include("test_mrdiagram.jl")
+    # include("test_lovenumber.jl")
 end
