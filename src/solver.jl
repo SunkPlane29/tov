@@ -7,7 +7,7 @@
 
 function pressurediffeq(r::Real, P::Real, M::Real, ϵ::Function)::Real
     if r == 0
-        return zero(r) # return 0 of tyPe of r, this should make dynamic disPatch work better   
+        return zero(r) # return 0 of type of r, this should make dynamic dispatch work better   
     end
 
     -(ϵ(P)*M/r^2)*(1 + P/ϵ(P))*(1 + 4π*r^3*P/M)*(1 - 2M/r)^(-1)
@@ -26,9 +26,9 @@ function solvetov(P0::Real, ϵ::Function, h::Real=1m)::AbstractMatrix
     m0 = 1e-24
 
     f(t, x) = [pressurediffeq(t, x[1], x[2], ϵ), massdiffeq(t, x[1], x[2], ϵ)]
-    condition(i, t, x) = x[1] > 0
+    terminate(i, t, x) = x[1] <= 0
 
-    sol = solvesystem(f, r0, [P0, m0], h, condition)
+    sol = solvesystem(f, r0, [P0, m0], h, terminate)
     sol[:, 1] = sol[:, 1]*LENGTH_UNIT_TO_SI*1e-3
     sol[:, 2] = sol[:, 2]*PRESSURE_UNIT_TO_SI*JOULE_TO_MEV4*MEV4_TO_MEVFM3
     
@@ -45,7 +45,7 @@ function solvemrdiagram(P0::AbstractVector, ϵ::Function, h::Real=1m)::AbstractM
 
     Threads.@threads for i in 1:n
         sol = solvetov(P0[i], ϵ, h)
-        mrdiagram[i, 2] = sol[end, 2]
+        mrdiagram[i, 2] = sol[end, 3]
         mrdiagram[i, 3] = sol[end, 1]
     end
 
