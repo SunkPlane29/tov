@@ -9,6 +9,10 @@ function pressurediffeq(r::Real, P::Real, M::Real, ϵ::Function)::Real
     if r == 0
         return zero(r) # return 0 of type of r, this should make dynamic dispatch work better   
     end
+    
+    if P < 0
+    	P = 0
+    end
 
     -(ϵ(P)*M/r^2)*(1 + P/ϵ(P))*(1 + 4π*r^3*P/M)*(1 - 2M/r)^(-1)
 end
@@ -16,6 +20,10 @@ end
 function massdiffeq(r::Real, P::Real, M::Real, ϵ::Function)::Real
     if r == 0
         return zero(r)
+    end
+    
+    if P < 0
+    	P = 0
     end
 
     4π*r^2*ϵ(P)
