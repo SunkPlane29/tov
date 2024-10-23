@@ -1,5 +1,39 @@
 using LinearAlgebra
 
+struct LinearInterpolation
+    x::Vector{Float64}
+    y::Vector{Float64}
+    a::Vector{Float64}
+    b::Vector{Float64}
+end
+
+function LinearInterpolation(x::AbstractVector, y::AbstractVector)::LinearInterpolation
+    n = length(x)-1
+    a = zeros(n)
+    b = zeros(n)
+
+    for i in 1:n
+        a[i] = (y[i+1] - y[i])/(x[i+1] - x[i])
+        b[i] = y[i] - a[i]*x[i]
+    end
+
+    LinearInterpolation(x, y, a, b)
+end
+
+function (li::LinearInterpolation)(x::Real)::Real
+    if x < li.x[1] || x > li.x[end]
+        throw(ArgumentError("x must be within the range of x"))
+    end
+
+    i = searchsortedlast(li.x, x)
+
+    if x == li.x[i]
+        return li.y[i]
+    end
+
+    li.a[i]*x + li.b[i]
+end
+
 #TODO: implement derivative
 struct CubicSpline
     x::Vector{Float64}

@@ -34,7 +34,7 @@ function solvetov(P0::Real, ϵ::Function, h::Real=1m)::AbstractMatrix
     m0 = 1e-24
 
     f(t, x) = [pressurediffeq(t, x[1], x[2], ϵ), massdiffeq(t, x[1], x[2], ϵ)]
-    terminate(i, t, x) = x[1] <= 0
+    terminate(i, t, x) = x[1] <= 0 || x[1] < 1e-16
 
     sol = solvesystem(f, r0, [P0, m0], h, terminate)
     sol[:, 1] = sol[:, 1]*LENGTH_UNIT_TO_SI*1e-3

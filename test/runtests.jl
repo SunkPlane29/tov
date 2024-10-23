@@ -13,6 +13,7 @@ eos = EoS(joinpath(dirname(@__FILE__), "eos", "eos.csv"), ["ρb", "P", "ϵ"])
 
 @testset "TOV" begin
     include("test_cublicspline.jl")
+    include("test_linearinterpolation.jl")
     include("test_diffsolve.jl")
     include("test_mrdiagram.jl")
     include("test_lovenumber.jl")
