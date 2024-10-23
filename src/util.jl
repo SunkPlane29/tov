@@ -21,8 +21,11 @@ function LinearInterpolation(x::AbstractVector, y::AbstractVector)::LinearInterp
 end
 
 function (li::LinearInterpolation)(x::Real)::Real
-    if x < li.x[1] || x > li.x[end]
-        throw(ArgumentError("x must be within the range of x"))
+    #extrapolation
+    if x < li.x[1]
+        return li.a[1]*x + li.b[1]
+    elseif x > li.x[end]
+        return li.a[end]*x + li.b[end]
     end
 
     i = searchsortedlast(li.x, x)
