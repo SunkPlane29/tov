@@ -100,6 +100,8 @@ using CSV, DataFrames
 #TODO: implement support for datafiles (not CSV) and other unit systems (not MeVfm3)
 function EoS(file::AbstractString, header=["P", "ϵ"], method::Symbol=:cubic_spline)::EoS
     df = CSV.File(file, header=header) |> DataFrame
+    df.P = (df.P).*MeVfm3
+    df.ϵ = (df.ϵ).*MeVfm3
     if method == :linear_interpolation
         return EoS(df.P, df.ϵ, LinearInterpolation(df.P, df.ϵ))
     elseif method == :cubic_spline
