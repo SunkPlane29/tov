@@ -29,12 +29,12 @@ function massdiffeq(r::Real, P::Real, M::Real, ϵ::Function)::Real
     4π*r^2*ϵ(P)
 end
 
-function solvetov(P0::Real, ϵ::Function, h::Real=1m)::AbstractMatrix
+function solvetov(P0::Real, ϵ::Function, h::Real=1m, lowpressure::Real=1e-16)::AbstractMatrix
     r0 = 1e-8
     m0 = 1e-24
 
     f(t, x) = [pressurediffeq(t, x[1], x[2], ϵ), massdiffeq(t, x[1], x[2], ϵ)]
-    terminate(i, t, x) = x[1] <= 0 || x[1] < 1e-16
+    terminate(i, t, x) = x[1] <= 0 || x[1] < lowpressure
 
     sol = solvesystem(f, r0, [P0, m0], h, terminate)
     sol[:, 1] = sol[:, 1]*LENGTH_UNIT_TO_SI*1e-3
@@ -43,7 +43,7 @@ function solvetov(P0::Real, ϵ::Function, h::Real=1m)::AbstractMatrix
     sol
 end
 
-function solvemrdiagram(P0::AbstractVector, ϵ::Function, h::Real=1m)::AbstractMatrix
+function solvemrdiagram(P0::AbstractVector, ϵ::Function, h::Real=1m, lowpressure::Real=1e-16)::AbstractMatrix
     n = length(P0) 
 
     mrdiagram = zeros(n, 3)
@@ -52,7 +52,7 @@ function solvemrdiagram(P0::AbstractVector, ϵ::Function, h::Real=1m)::AbstractM
     mrdiagram[:, 3] = fill(0.0, n)
 
     Threads.@threads for i in 1:n
-        sol = solvetov(P0[i], ϵ, h)
+        sol = solvetov(P0[i], ϵ, h, lowpressure)
         mrdiagram[i, 2] = sol[end, 3]
         mrdiagram[i, 3] = sol[end, 1]
     end
